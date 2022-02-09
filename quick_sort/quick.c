@@ -14,7 +14,7 @@
 #define SIZE 160000
 
 void swap(int *elem1, int *elem2);
-void generate_array(unsigned int *array, int index, int size);
+void generate_array(int *array, int index, int size);
 void print_array(int *array, int i, int size);
 
 int main(void)
@@ -65,7 +65,7 @@ void swap(int *elem1, int *elem2)
   *elem2 = tmp;
 }
 
-void generate_array(unsigned int *array, int index, int size)
+void generate_array(int *array, int index, int size)
 {
   if(index < size)
   {
