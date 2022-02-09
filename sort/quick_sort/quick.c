@@ -15,7 +15,7 @@
 
 void swap(int *elem1, int *elem2);
 void generate_array(int *array, int index, int size);
-void print_array(int *array, int i, int size);
+void print_array(int *array, int index, int size);
 
 int main(void)
 {
@@ -74,12 +74,12 @@ void generate_array(int *array, int index, int size)
   }
 }
 
-void print_array(int *array, int i, int size)
+void print_array(int *array, int index, int size)
 {
-  if(i < size)
+  if(index < size)
   {
-    printf("%d ", array[i]);
-    print_array(array, i + 1, size);
+    printf("%d ", array[index]);
+    print_array(array, index + 1, size);
   }
   else
     printf("\n");
