@@ -13,7 +13,7 @@
 #include "heap.h"
 void swap(int *elem1, int *elem2);
 void generate_array(int *array, int index, int size);
-void print_array(int *array, int i, int size);
+void print_array(int *array, int index, int size);
 
 int main(void)
 {
@@ -39,7 +39,7 @@ void adjust_aux(int *array, int size)
   if(size > 0)
   {
     swap(&array[0], &array[size-1]);
-    max_heapify(array, array[0], size-1);
+    max_heapify(array, array[0], size - 1);
     adjust_aux(array, size - 1);
   }
 }
@@ -105,12 +105,12 @@ void generate_array(int *array, int index, int size)
 }
 
 
-void print_array(int *array, int i, int size)
+void print_array(int *array, int index, int size)
 {
-  if(i < size)
+  if(index < size)
   {
-    printf("%d ", array[i]);
-    print_array(array, i + 1, size);
+    printf("%d ", array[index]);
+    print_array(array, index + 1, size);
   }
   else
     printf("\n");
