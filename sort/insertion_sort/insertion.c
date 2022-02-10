@@ -68,6 +68,7 @@ void print_array(int *array, int index, int size)
   {
     printf("%d ", array[index]);
     print_array(array, index + 1, size);
-  } else
-      printf("\n");
+  }
+  else
+    printf("\n");
 }
