@@ -35,23 +35,23 @@ void swap(int *elem1, int *elem2)
   *elem2 = tmp;
 }
 
-int search_minor(int array[], int i, int size, int minor)
+int search_minor(int array[], int index, int size, int minor)
 {
-  if(i == size)
+  if(index == size)
     return minor;
-  if(array[i] < array[minor])
-    return search_minor(array, i + 1, size, i);
-  return search_minor(array, i + 1, size, minor);
+  if(array[index] < array[minor])
+    return search_minor(array, index + 1, size, index);
+  return search_minor(array, index + 1, size, minor);
 }
 
-void selection_sort(int array[], int i, int size)
+void selection_sort(int array[], int index, int size)
 {
-  if(i < size)
+  if(index < size)
   {
-    int minor = search_minor(array, i, size, i);
-    if(minor != i)
-      swap(&array[minor], &array[i]);
-    selection_sort(array, i + 1, size);
+    int minor = search_minor(array, index, size, index);
+    if(minor != index)
+      swap(&array[minor], &array[index]);
+    selection_sort(array, index + 1, size);
   }
 }
 
