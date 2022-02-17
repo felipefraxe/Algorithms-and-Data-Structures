@@ -1,8 +1,2 @@
-# Sorting algorithms
-Differents solutions for the same sorting problem.
-<li> Quick Sort
-<li> Heap Sort
-<li> Merge Sort
-<li> Bubble Sort
-<li> Selection Sort
-<li> Insertion Sort
+# Algorithms and Data Structures
+Some useful Algorithms and Data Structures that I've been learning.
