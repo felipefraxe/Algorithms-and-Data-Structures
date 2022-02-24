@@ -12,18 +12,18 @@
 
 #include "selection.h"
 void swap(int *elem1, int *elem2);
-void generate_array(int *array, int index, int size);
-void print_array(int *array, int index, int size);
+void generate_array(int *array, int size);
+void print_array(int *array, int size);
 
 int main(void)
 {
   srand(time(0));
   int array[SIZE];
-  generate_array(array, 0, SIZE);
+  generate_array(array, SIZE);
   clock_t t = clock();
-  selection_sort(array, 0, SIZE);
+  selection_sort(array, SIZE);
   t = clock() - t;
-  print_array(array, 0, SIZE);
+  print_array(array, SIZE);
   printf("This method took %lf seconds to sort\n", (double) t / CLOCKS_PER_SEC);
   return EXIT_SUCCESS;
 }
@@ -35,42 +35,35 @@ void swap(int *elem1, int *elem2)
   *elem2 = tmp;
 }
 
-int search_minor(int array[], int index, int size, int minor)
+int search_minor(int *array, int start, int size, int minor)
 {
-  if(index == size)
-    return minor;
-  if(array[index] < array[minor])
-    return search_minor(array, index + 1, size, index);
-  return search_minor(array, index + 1, size, minor);
+  for(int i = start; i < size; i++)
+  {
+    if(array[i] < array[minor])
+      minor = i;
+  }
+  return minor;
 }
 
-void selection_sort(int array[], int index, int size)
+void selection_sort(int *array, int size)
 {
-  if(index < size)
+  for(int i = 0; i < size; i++)
   {
-    int minor = search_minor(array, index, size, index);
-    if(minor != index)
-      swap(&array[minor], &array[index]);
-    selection_sort(array, index + 1, size);
+    int minor = search_minor(array, i, size, i);
+    if(minor != i)
+      swap(&array[minor], &array[i]);
   }
 }
 
-void generate_array(int *array, int index, int size)
+void generate_array(int *array, int size)
 {
-  if(index < size)
-  {
-    array[index] = rand() / (RAND_MAX / SIZE + 1);
-    generate_array(array, index + 1, size);
-  }
+  for(int i = 0; i < size; i++)
+    array[i] = rand() / (RAND_MAX / size + 1);
 }
 
-void print_array(int *array, int index, int size)
+void print_array(int *array, int size)
 {
-  if(index < size)
-  {
-    printf("%d ", array[index]);
-    print_array(array, index + 1, size);
-  }
-  else
-    printf("\n");
+  for(int i = 0; i < size; i++)
+    printf("%d ", array[i]);
+  printf("\n");
 }
