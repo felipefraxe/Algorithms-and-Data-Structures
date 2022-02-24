@@ -9,7 +9,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 
-#define SIZE 30000
+#define SIZE 100000
 
 #include "bubble.h"
 void swap(int *elem1, int *elem2);

@@ -11,7 +11,7 @@
 #include "quick.h"
 
 // Define Array's size
-#define SIZE 2000000
+#define SIZE 1000000
 
 void swap(int *elem1, int *elem2);
 void generate_array(int *array, int size);
