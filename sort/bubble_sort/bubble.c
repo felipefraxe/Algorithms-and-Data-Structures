@@ -6,24 +6,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <stdbool.h>
 #include <unistd.h>
 
-#define SIZE 160000
+#define SIZE 100000
 
 #include "bubble.h"
 void swap(int *elem1, int *elem2);
-void generate_array(int *array, int index, int size);
-void print_array(int *array, int index, int size);
+void generate_array(int *array, int size);
+void print_array(int *array, int size);
 
 int main(void)
 {
   srand(time(0));
   int array[SIZE];
-  generate_array(array, 0, SIZE);
+  generate_array(array, SIZE);
   clock_t t = clock();
-  bubble_sort(array, 0, SIZE);
+  bubble_sort(array, SIZE);
   t = clock() - t;
-  print_array(array, 0, SIZE);
+  print_array(array, SIZE);
   printf("This method took %lf seconds to sort\n", (double) t / CLOCKS_PER_SEC);
   return EXIT_SUCCESS;
 }
@@ -35,40 +36,32 @@ void swap(int *elem1, int *elem2)
   *elem2 = tmp;
 }
 
-void bubble_sort(int *array, int index, int size)
+void bubble_sort(int *array, int size)
 {
-  if(index < size)
+  bool swapped = true;
+  for(int i = 0; i < size - 1 && swapped; i++)
   {
-    bubble(array, 0, size);
-    bubble_sort(array, index, size - 1);
+    swapped = false;
+    for(int j = 0; j < size - i - 1; j++)
+    {
+      if(array[j] > array[j+1])
+      {
+        swap(&array[j], &array[j+1]);
+        swapped = true;
+      }
+    }
   }
 }
 
-void bubble(int *array, int index, int size)
+void generate_array(int *array, int size)
 {
-  if(index + 1 < size)
-  {
-    if(array[index] > array[index+1])
-      swap(&array[index], &array[index+1]);
-    bubble(array, index + 1, size);
-  }
+  for(int i = 0; i < size; i++)
+    array[i] = rand() / (RAND_MAX / size + 1);
 }
 
-void generate_array(int *array, int index, int size)
+void print_array(int *array, int size)
 {
-  if(index < size)
-  {
-    array[index] = rand() / (RAND_MAX / SIZE + 1);
-    generate_array(array, index + 1, size);
-  }
-}
-
-void print_array(int *array, int index, int size)
-{
-  if(index < size)
-  {
-    printf("%d ", array[index]);
-    print_array(array, index + 1, size);
-  } else
-      printf("\n");
+  for(int i = 0; i < size; i++)
+    printf("%d ", array[i]);
+  printf("\n");
 }

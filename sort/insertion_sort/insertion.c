@@ -12,18 +12,18 @@
 
 #include "insertion.h"
 void swap(int *elem1, int *elem2);
-void generate_array(int *array, int index, int size);
-void print_array(int *array, int index, int size);
+void generate_array(int *array, int size);
+void print_array(int *array, int size);
 
 int main(void)
 {
   srand(time(0));
   int array[SIZE];
-  generate_array(array, 0, SIZE);
+  generate_array(array, SIZE);
   clock_t t = clock();
-  insertion_sort(array, 1, SIZE);
+  insertion_sort(array, SIZE);
   t = clock() - t;
-  print_array(array, 0, SIZE);
+  print_array(array, SIZE);
   printf("This method took %lf seconds to sort\n", (double) t / CLOCKS_PER_SEC);
   return EXIT_SUCCESS;
 }
@@ -35,40 +35,30 @@ void swap(int *elem1, int *elem2)
   *elem2 = tmp;
 }
 
-void insertion_sort(int *array, int index, int size)
+void insertion_sort(int *array, int size)
 {
-  if(index < size)
+  for(int i = 1; i < size; i++)
+    place_in_order(array, i);
+}
+
+void place_in_order(int *array, int i)
+{
+  while(i > 0 && array[i] < array[i-1])
   {
-    place_in_order(array, index);
-    insertion_sort(array, index + 1, size);
+    swap(&array[i], &array[i-1]);
+    i--;
   }
 }
 
-void place_in_order(int *array, int index)
+void generate_array(int *array, int size)
 {
-  if(index > 0 && array[index] < array[index-1])
-  {
-    swap(&array[index], &array[index-1]);
-    place_in_order(array, index-1);
-  }
+  for(int i = 0; i < size; i++)
+    array[i] = rand() / (RAND_MAX / size + 1);
 }
 
-void generate_array(int *array, int index, int size)
+void print_array(int *array, int size)
 {
-  if(index < size)
-  {
-    array[index] = rand() / (RAND_MAX / SIZE + 1);
-    generate_array(array, index + 1, size);
-  }
-}
-
-void print_array(int *array, int index, int size)
-{
-  if(index < size)
-  {
-    printf("%d ", array[index]);
-    print_array(array, index + 1, size);
-  }
-  else
-    printf("\n");
+  for(int i = 0; i < size; i++)
+    printf("%d ", array[i]);
+  printf("\n");
 }
