@@ -11,21 +11,21 @@
 #include "quick.h"
 
 // Define Array's size
-#define SIZE 160000
+#define SIZE 2000000
 
 void swap(int *elem1, int *elem2);
-void generate_array(int *array, int index, int size);
-void print_array(int *array, int index, int size);
+void generate_array(int *array, int size);
+void print_array(int *array, int size);
 
 int main(void)
 {
   srand(time(0));
   int array[SIZE];
-  generate_array(array, 0, SIZE);
+  generate_array(array, SIZE);
   clock_t t = clock();
   quick_sort(array, 0, SIZE - 1);
   t = clock() - t;
-  print_array(array, 0, SIZE);
+  print_array(array, SIZE);
   printf("This method took %lf seconds to sort\n", (double) t / CLOCKS_PER_SEC);
   return EXIT_SUCCESS;
 }
@@ -43,16 +43,16 @@ void quick_sort(int *array, int left, int right)
 
 int partition(int *array, int left, int right, int pivot)
 {
-  if(left < right)
+  while(left < right)
   {
-    if(array[left] <= pivot)
-      return partition(array, left + 1, right, pivot);
-    if(array[right] > pivot)
-      return partition(array, left, right - 1, pivot);
+    while(array[left] <= pivot && left < right)
+      left++;
+    while(array[right] > pivot && left < right)
+      right--;
     if(left < right)
     {
       swap(&array[left], &array[right]);
-      return partition(array, left + 1, right, pivot);
+      left++;
     }
   }
   return left;
@@ -65,22 +65,15 @@ void swap(int *elem1, int *elem2)
   *elem2 = tmp;
 }
 
-void generate_array(int *array, int index, int size)
+void generate_array(int *array, int size)
 {
-  if(index < size)
-  {
-    array[index] = rand() / (RAND_MAX / SIZE + 1);
-    generate_array(array, index + 1, size);
-  }
+  for(int i = 0; i < size; i++)
+    array[i] = rand() / (RAND_MAX / size + 1);
 }
 
-void print_array(int *array, int index, int size)
+void print_array(int *array, int size)
 {
-  if(index < size)
-  {
-    printf("%d ", array[index]);
-    print_array(array, index + 1, size);
-  }
-  else
-    printf("\n");
+  for(int i = 0; i < size; i++)
+    printf("%d ", array[i]);
+  printf("\n");
 }
