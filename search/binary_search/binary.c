@@ -34,7 +34,7 @@ int binary_search(int *array, int left, int right, int num)
 {
   while(left <= right)
   {
-    int mid = (left + right) / 2;
+    int mid = left + (right - left) / 2;
     if(array[mid] == num)
       return mid;
     if(array[mid] < num)
