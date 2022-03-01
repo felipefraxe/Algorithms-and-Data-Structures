@@ -43,8 +43,6 @@ int binary_search(int *array, int left, int right, int num)
       right = mid - 1;
   }
   return -1;
-  
-
 }
 
 void generate_array(int *array, int size)
