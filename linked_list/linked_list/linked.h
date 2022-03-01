@@ -15,6 +15,8 @@ list* create_node(int key);
 list* insert_node(list *head, list *node);
 list* remove_node(list *head, int key);
 list* search(list *head, int key);
+list* reverse(list *head);
+int length(list *head);
 void printf_list(list *head);
 void deallocate_list(list *head);
 

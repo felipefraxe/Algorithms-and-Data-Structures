@@ -21,6 +21,9 @@ int main(void)
   list *found = search(head, 50);
   found && printf("%d\n", found->key);
   printf_list(head);
+  head = reverse(head);
+  printf_list(head);
+  printf("length: %d\n", length(head));
   deallocate_list(head);
   return EXIT_SUCCESS;
 }
@@ -40,10 +43,8 @@ list* create_node(int key)
 
 list* insert_node(list *head, list *node)
 {
-  if(!head)
-    return node;
-  head->next = insert_node(head->next, node);
-  return head;
+  node->next = head;
+  return node;
 }
 
 list* search(list *head, int key)
@@ -69,6 +70,31 @@ list* remove_node(list *head, int key)
     return head;
   }
   head->next = remove_node(head->next, key);
+  return head;
+}
+
+int length(list *head)
+{
+  int len = 0;
+  while(head)
+  {
+    len++;
+    head = head->next;
+  }
+  return len;
+}
+
+list* reverse(list *head)
+{
+  list *previous = NULL, *next = head->next;
+  while(next)
+  {
+    head->next = previous;
+    previous = head;
+    head = next;
+    next = head->next;
+  }
+  head->next = previous;
   return head;
 }
 
