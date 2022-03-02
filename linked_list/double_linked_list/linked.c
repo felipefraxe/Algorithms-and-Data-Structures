@@ -19,7 +19,7 @@ int main(void)
   insert_node_back(&head, &tail, create_node(100));
   list *found = search(head, tail, 100);
   found && printf("found\n");
-  remove_node(&head, &tail, 100);
+  remove_node(&head, &tail, 75);
   printf_list(head);
   printf_list_reverse(tail);
   deallocate_list(head);
@@ -66,6 +66,8 @@ void insert_node_back(list **head, list **tail, list *node)
 
 list* search(list *head, list *tail, int key)
 {
+  if(head == tail)
+    return head;
   for(head, tail; head != tail; head = head->next, tail = tail->previous)
   {
     if(head->key == key)
@@ -78,6 +80,12 @@ list* search(list *head, list *tail, int key)
 
 void remove_node(list **head, list **tail, int key)
 {
+  if(*head == *tail && (*head)->key == key)
+  {
+    free(*head);
+    *head = *tail = NULL;
+    return;
+  }
   if((*head)->key == key)
   {
     list *tmp = *head;
