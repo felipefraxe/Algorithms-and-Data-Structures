@@ -19,7 +19,7 @@ int main(void)
   insert_node_back(&head, &tail, create_node(100));
   list *found = search(head, tail, 100);
   found && printf("found\n");
-  remove_node(&head, &tail, 75);
+  remove_node(&head, &tail, 100);
   printf_list(head);
   printf_list_reverse(tail);
   deallocate_list(head);
