@@ -17,6 +17,9 @@ int main(void)
   insert_node_front(&head, &tail, create_node(50));
   insert_node_front(&head, &tail, create_node(75));
   insert_node_back(&head, &tail, create_node(100));
+  list *found = search(head, tail, 100);
+  found && printf("found\n");
+  remove_node(&head, &tail, 75);
   printf_list(head);
   printf_list_reverse(tail);
   deallocate_list(head);
@@ -63,14 +66,12 @@ void insert_node_back(list **head, list **tail, list *node)
 
 list* search(list *head, list *tail, int key)
 {
-  while(head != tail)
+  for(head, tail; head != tail; head = head->next, tail = tail->previous)
   {
     if(head->key == key)
       return head;
     if(tail->key == key)
       return tail;
-    head = head->next;
-    tail = tail->previous;
   }
   return NULL;
 }
@@ -82,6 +83,7 @@ void remove_node(list **head, list **tail, int key)
     list *tmp = *head;
     *head = (*head)->next;
     free(tmp);
+    (*head)->previous = NULL;
     return;
   }
   if((*tail)->key == key)
@@ -89,14 +91,11 @@ void remove_node(list **head, list **tail, int key)
     list *tmp = *tail;
     *tail = (*tail)->previous;
     free(tmp);
+    (*tail)->next = NULL;
     return;
   }
-
-  list *tmp_head = *head, *tmp_tail = *tail;
-  while(tmp_head != tmp_tail)
+  for(list *tmp_head = *head, *tmp_tail = *tail; tmp_head != tmp_tail; tmp_head = tmp_head->next, tmp_tail = tmp_tail->previous)
   {
-    tmp_head = tmp_head->next;
-    tmp_tail = tmp_tail->previous;
     if(tmp_head->key == key)
     {
       list *previous = tmp_head->previous, *next = tmp_head->next;
