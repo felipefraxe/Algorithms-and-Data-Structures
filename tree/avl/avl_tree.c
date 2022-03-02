@@ -50,16 +50,20 @@ avl_tree* insert_node(avl_tree *root, avl_tree *node)
 
 avl_tree* search(avl_tree *root, int key)
 {
-  if(!root || root->key == key)
-    return root;
-  return root->key < key ? search(root->right, key) : search(root->left, key);
+  while(root)
+  {
+    if(root->key == key)
+      return root;
+    key > root->key ? (root = root->right) : (root = root->left);
+  }
+  return NULL;
 }
 
 avl_tree* find_min(avl_tree *root)
 {
-  if(!root->left)
-    return root;
-  return find_min(root->left);
+  while(root->left)
+    root = root->left;
+  return root;
 }
 
 avl_tree* remove_node(avl_tree *root, int key)
