@@ -80,14 +80,14 @@ list* search(list *head, list *tail, int key)
 
 void remove_node(list **head, list **tail, int key)
 {
-  if(*head == *tail && (*head)->key == key)
-  {
-    free(*head);
-    *head = *tail = NULL;
-    return;
-  }
   if((*head)->key == key)
   {
+    if(*head == *tail)
+    {
+      free(*head);
+      *head = *tail = NULL;
+      return;
+    }
     list *tmp = *head;
     *head = (*head)->next;
     free(tmp);
