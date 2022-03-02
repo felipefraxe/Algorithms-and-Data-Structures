@@ -17,9 +17,6 @@ int main(void)
   head = insert_node(head, create_node(50));
   head = insert_node(head, create_node(75));
   head = insert_node(head, create_node(100));
-  head = remove_node(head, 100);
-  list *found = search(head, 50);
-  found && printf("%d\n", found->key);
   printf_list(head);
   head = reverse(head);
   printf_list(head);
@@ -49,11 +46,10 @@ list* insert_node(list *head, list *node)
 
 list* search(list *head, int key)
 {
-  while(head)
+  for(head; head; head = head->next)
   {
     if(head->key == key)
       return head;
-    head = head->next;
   }
   return NULL;
 }
@@ -62,30 +58,37 @@ list* remove_node(list *head, int key)
 {
   if(!head)
     return head;
+  list *tmp = head, *previous = head;
   if(head->key == key)
   {
-    list *tmp = head;
     head = head->next;
     free(tmp);
     return head;
   }
-  head->next = remove_node(head->next, key);
+  for(previous = head, tmp = tmp->next; tmp; previous = tmp, tmp = tmp->next)
+  {
+    if(tmp->key == key)
+    {
+      previous->next = tmp->next;
+      free(tmp);
+      return head;
+    }
+  }
   return head;
 }
 
 int length(list *head)
 {
   int len = 0;
-  while(head)
-  {
+  for(head; head; head = head->next)
     len++;
-    head = head->next;
-  }
   return len;
 }
 
 list* reverse(list *head)
 {
+  if(!head)
+    return head;
   list *previous = NULL, *next = head->next;
   while(next)
   {
