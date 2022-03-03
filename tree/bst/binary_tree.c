@@ -15,9 +15,9 @@ int main(void)
   int size = sizeof(num) / sizeof(num[0]);
   for(int i = 0; i < size; i++)
     root = insert_node(root, create_node(num[i]));
-  root = remove_node(root, 100);
+  root = remove_node(root, 42);
   tree *found = search(root, 86);
-  found ? printf("Found %d\n", found->key) : printf("Couldn't find the key\n");
+  found && printf("Found %d\n", found->key);
   printf_tree(root);
   deallocate(root);
   return EXIT_SUCCESS;
@@ -40,13 +40,19 @@ tree* insert_node(tree *root, tree *node)
 {
   if(!root)
     return node;
-  if(root->key == node->key)
+  tree *tmp = root, *parent = NULL;
+  while(tmp)
   {
-    printf("Repeated key\n");
-    free(node);
-    return root;
+    if(tmp->key == node->key)
+    {
+      printf("Repeated key\n");
+      free(node);
+      return root;
+    }
+    parent = tmp;
+    node->key > tmp->key ? (tmp = tmp->right) : (tmp = tmp->left);
   }
-  node->key > root->key ? (root->right = insert_node(root->right, node)) : (root->left = insert_node(root->left, node));
+  parent && parent->key > node->key ? (parent->left = node) : (parent->right = node);
   return root;
 }
 
@@ -70,31 +76,32 @@ tree* find_min(tree *root)
 
 tree* remove_node(tree *root, int key)
 {
-  if(!root)
-    return root;  
-  tree *right = root->right, *left = root->left;
-  if(root->key == key)
+  tree *tmp = root, *parent = NULL;
+  while(tmp)
   {
-    if(right == left)
+    if(tmp->key == key)
     {
-      free(root);
-      return NULL;
+      if(tmp->right && tmp->left)
+      {
+        key = tmp->key = find_min(tmp->right)->key;
+        parent = tmp;
+        tmp = tmp->right;
+        continue;
+      }
+      if(!parent)
+        root = tmp->left ? tmp->left : tmp->right;
+      else if(tmp->right == tmp->left)
+        key >= parent->key ? (parent->right = NULL) : (parent->left = NULL);
+      else if(!tmp->right)
+        key >= parent->key ? (parent->right = tmp->left) : (parent->left = tmp->left);
+      else
+        key >= parent->key ? (parent->right = tmp->right) : (parent->left = tmp->right);
+      free(tmp);
+      return root;
     }
-    if(!right)
-    {
-      free(root);
-      return left;
-    }
-    if(!left)
-    {
-      free(root);
-      return right;
-    }
-    root->key = find_min(right)->key;
-    root->right = remove_node(right, root->key);
-    return root;
+    parent = tmp;
+    tmp = key > tmp->key ? tmp->right : tmp->left;
   }
-  root->key < key ? (root->right = remove_node(root->right, key)) : (root->left = remove_node(root->left, key));
   return root;
 }
 
