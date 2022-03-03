@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 #include "avl_tree.h"
+int max(int num1, int num2);
 
 int main(void)
 {
@@ -54,7 +55,7 @@ avl_tree* search(avl_tree *root, int key)
   {
     if(root->key == key)
       return root;
-    key > root->key ? (root = root->right) : (root = root->left);
+    root = key > root->key ? root->right : root->left;
   }
   return NULL;
 }
@@ -116,9 +117,9 @@ void printf_tree(avl_tree *root)
   }
 }
 
-int max(int key1, int key2)
+int max(int num1, int num2)
 {
-  return key1 > key2 ? key1 : key2;
+  return num1 > num2 ? num1 : num2;
 }
 
 int node_height(avl_tree *root)

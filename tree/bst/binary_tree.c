@@ -50,9 +50,9 @@ tree* insert_node(tree *root, tree *node)
       return root;
     }
     parent = tmp;
-    node->key > tmp->key ? (tmp = tmp->right) : (tmp = tmp->left);
+    tmp = node->key > tmp->key ? tmp->right : tmp->left;
   }
-  parent && parent->key > node->key ? (parent->left = node) : (parent->right = node);
+  parent->key > node->key ? (parent->left = node) : (parent->right = node);
   return root;
 }
 
@@ -62,7 +62,7 @@ tree* search(tree *root, int key)
   {
     if(root->key == key)
       return root;
-    key > root->key ? (root = root->right) : (root = root->left);
+    root = key > root->key ? root->right : root->left;
   }
   return NULL;
 }
