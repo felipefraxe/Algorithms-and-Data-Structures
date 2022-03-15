@@ -15,8 +15,7 @@ int main(void)
   int num[] = { 42, 51, 16, 19, 56, 37, 42, 86, 71, 10, 75, 22, 87, 31, 42, 65, 11, 94, 43, 18 };
   int size = sizeof(num) / sizeof(num[0]);
   for(int i = 0; i < size; i++)
-    root = insert_node(root, create_node(num[i]));
-  root = remove_node(root, 100);
+    insert_node(&root, create_node(num[i]));
   printf_tree(root);
   deallocate(root);
   return EXIT_SUCCESS;
@@ -35,18 +34,20 @@ avl_tree* create_node(int key)
   return node;
 }
 
-avl_tree* insert_node(avl_tree *root, avl_tree *node)
+void insert_node(avl_tree **root, avl_tree *node)
 {
-  if(!root)
-    return node;
-  if(root->key == node->key)
+  if(!*root)
+    *root = node;
+  else if((*root)->key == node->key)
   {
-    printf("Repeated key\n");
+    printf("Repeated key %d\n", node->key);
     free(node);
-    return root;
   }
-  node->key > root->key ? (root->right = insert_node(root->right, node)) : (root->left = insert_node(root->left, node));
-  return balance(root);
+  else
+  {
+    node->key > (*root)->key ? (insert_node(&(*root)->right, node)) : (insert_node(&(*root)->left, node));
+    balance(root);
+  }
 }
 
 avl_tree* search(avl_tree *root, int key)
@@ -67,34 +68,37 @@ avl_tree* find_min(avl_tree *root)
   return root;
 }
 
-avl_tree* remove_node(avl_tree *root, int key)
+void remove_node(avl_tree **root, int key)
 {
-  if(!root)
-    return root;
-  avl_tree *right = root->right, *left = root->left;
-  if(root->key == key)
+  if(!*root)
+    return;
+  avl_tree *right = (*root)->right, *left = (*root)->left;
+  if((*root)->key == key)
   {
     if(right == left)
     {
-      free(root);
-      return NULL;
-    } 
-    if(!right)
-    {
-      free(root);
-      return left;
+      free(*root);
+      *root = NULL;
     }
-    if(!left)
+    else if(!right)
     {
-      free(root);
-      return right;
+      free(*root);
+      *root = left;
     }
-    root->key = find_min(right)->key;
-    root->right = remove_node(right, root->key);
-    return balance(root);
+    else if(!left)
+    {
+      free(*root);
+      *root = right;
+    }
+    else
+    {
+      (*root)->key = find_min(right)->key;
+      remove_node(&(*root)->right, (*root)->key);
+    }
   }
-  root->key < key ? (root->right = remove_node(root->right, key)) : (root->left = remove_node(root->left, key));
-  return balance(root);
+  else
+    key > (*root)->key ? (remove_node(&(*root)->right, key)) : (remove_node(&(*root)->left, key));
+  balance(root);
 }
 
 void deallocate(avl_tree *root)
@@ -136,24 +140,29 @@ int balance_factor(avl_tree *root)
   return 0;
 }
 
-avl_tree* balance(avl_tree *root)
+void balance(avl_tree **root)
 {
-  int value = balance_factor(root);
+  int value = balance_factor(*root);
   if(value > 1)
   {
-    if(balance_factor(root->left) > 0)
-      return right_rotation(root);
-    root->left = left_rotation(root->left);
-    return right_rotation(root);
+    if(balance_factor((*root)->left) > 0)
+      *root = right_rotation(*root);
+    else
+    {
+      (*root)->left = left_rotation((*root)->left);
+      *root = right_rotation(*root);
+    }
   }
-  if(value < -1)
+  else if(value < -1)
   {
-    if(balance_factor(root->right) < 0)
-      return left_rotation(root);
-    root->right = right_rotation(root->right);
-    return left_rotation(root);
+    if(balance_factor((*root)->right) < 0)
+      *root = left_rotation(*root);
+    else
+    {
+      (*root)->right = right_rotation((*root)->right);
+      *root = left_rotation(*root);
+    }
   }
-  return root;
 }
 
 avl_tree* right_rotation(avl_tree *root)
