@@ -11,9 +11,9 @@ tree;
 //Prototypes for binary search tree
 tree* search(tree *root, int num);
 tree* find_min(tree *root);
-tree* remove_node(tree *root, int num);
+void remove_node(tree **root, int num);
 tree* create_node(int key);
-tree* insert_node(tree *root, tree *n);
+void insert_node(tree **root, tree *n);
 void printf_tree(tree *root);
 void deallocate(tree *root);
 

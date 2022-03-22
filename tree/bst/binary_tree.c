@@ -14,8 +14,8 @@ int main(void)
   int num[] = { 42, 51, 16, 19, 56, 37, 42, 86, 71, 10, 75, 22, 87, 31, 42, 65, 11, 94, 43, 18 };
   int size = sizeof(num) / sizeof(num[0]);
   for(int i = 0; i < size; i++)
-    root = insert_node(root, create_node(num[i]));
-  root = remove_node(root, 42);
+    insert_node(&root, create_node(num[i]));
+  remove_node(&root, 42);
   tree *found = search(root, 86);
   found && printf("Found %d\n", found->key);
   printf_tree(root);
@@ -36,24 +36,24 @@ tree* create_node(int key)
   return node;
 }
 
-tree* insert_node(tree *root, tree *node)
+void insert_node(tree **root, tree *node)
 {
-  if(!root)
-    return node;
-  tree *tmp = root, *parent = NULL;
+  tree *tmp = *root, *parent = NULL;
   while(tmp)
   {
     if(tmp->key == node->key)
     {
       printf("Repeated key\n");
       free(node);
-      return root;
+      return;
     }
     parent = tmp;
     tmp = node->key > tmp->key ? tmp->right : tmp->left;
   }
-  parent->key > node->key ? (parent->left = node) : (parent->right = node);
-  return root;
+  if(parent)
+    parent->key > node->key ? (parent->left = node) : (parent->right = node);
+  else
+    *root = node;
 }
 
 tree* search(tree *root, int key)
@@ -74,9 +74,9 @@ tree* find_min(tree *root)
   return root;
 }
 
-tree* remove_node(tree *root, int key)
+void remove_node(tree **root, int key)
 {
-  tree *tmp = root, *parent = NULL;
+  tree *tmp = *root, *parent = NULL;
   while(tmp)
   {
     if(tmp->key == key)
@@ -89,7 +89,7 @@ tree* remove_node(tree *root, int key)
         continue;
       }
       if(!parent)
-        root = tmp->left ? tmp->left : tmp->right;
+        *root = tmp->left ? tmp->left : tmp->right;
       else if(tmp->right == tmp->left)
         key >= parent->key ? (parent->right = NULL) : (parent->left = NULL);
       else if(!tmp->right)
@@ -97,12 +97,11 @@ tree* remove_node(tree *root, int key)
       else
         key >= parent->key ? (parent->right = tmp->right) : (parent->left = tmp->right);
       free(tmp);
-      return root;
+      return;
     }
     parent = tmp;
     tmp = key > tmp->key ? tmp->right : tmp->left;
   }
-  return root;
 }
 
 void deallocate(tree *root)
