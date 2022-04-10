@@ -20,6 +20,7 @@ Node;
 
 unsigned int hash(char *key);
 void add_node(Node *hash_table[], char *key, char *value);
+void delete_node(Node *hash_table[], char *key);
 char* search_node(Node *hash_table[], char *key);
 Node* create_node(char *key, char *value);
 void deallocate_table(Node *hash_table[]);
@@ -30,8 +31,8 @@ int main(void) {
   add_node(hash_table, "Felipe", "Fraxe");
   add_node(hash_table, "epileF", "Filho");
   printf("%s\n", search_node(hash_table, "Felipe"));
-  printf("%s\n", search_node(hash_table, "epileF"));
-  
+  delete_node(hash_table, "Felipe");
+  printf("%s\n", search_node(hash_table, "Felipe"));
   deallocate_table(hash_table);
   return EXIT_SUCCESS;
 }
@@ -44,7 +45,6 @@ unsigned int hash(char *key)
     index = (index * 33) + c;
   return (index % MAX_LENGTH);
 }
-
 
 Node* create_node(char *key, char *value)
 {
@@ -62,7 +62,6 @@ Node* create_node(char *key, char *value)
   return node;
 }
 
-
 void add_node(Node *hash_table[], char *key, char *value)
 {
   Node *node = create_node(key, value);
@@ -72,6 +71,26 @@ void add_node(Node *hash_table[], char *key, char *value)
   hash_table[index] = node;
 }
 
+void delete_node(Node *hash_table[], char *key)
+{
+  unsigned int index = hash(key);
+  Node *tmp = hash_table[index], *previous = NULL;
+  while(tmp)
+  {
+    if(strcmp(tmp->key, key) == 0)
+    {
+      free(tmp->key);
+      free(tmp->value);
+      if(previous)
+        previous->next = tmp->next;
+      else
+        hash_table[index] = NULL;
+      free(tmp);
+    }
+    previous = tmp;
+    tmp = tmp->next;
+  }
+}
 
 char* search_node(Node *hash_table[], char *key)
 {
@@ -85,7 +104,6 @@ char* search_node(Node *hash_table[], char *key)
   }
   return "";
 }
-
 
 void deallocate_table(Node *hash_table[])
 {
