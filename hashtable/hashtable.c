@@ -50,14 +50,18 @@ Node* create_node(char *key, char *value)
 {
   Node *node = malloc(sizeof(Node));
   if(!node)
-  {
-    printf("Could not allocate memory for node\n");
     exit(EXIT_FAILURE);
-  }
-  node->key = malloc(sizeof(strlen(key)+1));
+
+  node->key = malloc(strlen(key)+1);
+  if(!node->key)
+    exit(EXIT_FAILURE);
   strcpy(node->key, key);
-  node->value = malloc(sizeof(strlen(value)+1));
+
+  node->value = malloc(strlen(value)+1);
+  if(!node->value)
+    exit(EXIT_FAILURE);
   strcpy(node->value, value);
+
   node->next = NULL;
   return node;
 }
@@ -84,7 +88,7 @@ void delete_node(Node *hash_table[], char *key)
       if(previous)
         previous->next = tmp->next;
       else
-        hash_table[index] = NULL;
+        hash_table[index] = tmp->next;
       free(tmp);
     }
     previous = tmp;
