@@ -5,15 +5,16 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include <unistd.h>
 
 #include "quick.h"
 
 // Define Array's size
-#define SIZE 1000000
+#define SIZE 2000000
 
-void swap(int *elem1, int *elem2);
+void swap(void *elem1, void *elem2, size_t size);
 void generate_array(int *array, int size);
 void print_array(int *array, int size);
 
@@ -51,18 +52,20 @@ int partition(int *array, int left, int right, int pivot)
       right--;
     if(left < right)
     {
-      swap(&array[left], &array[right]);
+      swap(&array[left], &array[right], sizeof(int));
       left++;
     }
   }
   return left;
 }
 
-void swap(int *elem1, int *elem2)
+void swap(void *elem1, void *elem2, size_t size)
 {
-  int tmp = *elem1;
-  *elem1 = *elem2;
-  *elem2 = tmp;
+  void *tmp = malloc(size);
+  memcpy(tmp, elem1, size);
+  memcpy(elem1, elem2, size);
+  memcpy(elem2, tmp, size);
+  free(tmp);
 }
 
 void generate_array(int *array, int size)
