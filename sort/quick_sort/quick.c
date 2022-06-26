@@ -12,7 +12,7 @@
 #include "quick.h"
 
 // Define Array's size
-#define SIZE 2000000
+#define SIZE 200000
 
 void swap(void *elem1, void *elem2, size_t size);
 void generate_array(int *array, int size);
@@ -21,12 +21,12 @@ int intcmp(void *ptr1, void *ptr2);
 
 int main(void)
 {
-  srand(time(0));
+  srand(time(NULL));
   int array[SIZE];
   generate_array(array, SIZE);
 
   clock_t t = clock();
-  quick_sort(array, 0, SIZE - 1, intcmp);
+  quick_sort(array, sizeof(int), 0, SIZE - 1, intcmp);
   t = clock() - t;
 
   print_array(array, SIZE);
@@ -41,41 +41,38 @@ int intcmp(void *ptr1, void *ptr2)
   return *num1 - *num2;
 }
 
-void quick_sort(int *array, int left, int right, int (*cmp)(void *, void *))
+void quick_sort(void *array, size_t size, int left, int right, int (*cmp)(void *, void *))
 {
   if(left < right)
   {
-    int pivot = (array[left] + array[(left + right) / 2] + array[right]) / 3;
-    int frontier = partition(array, left, right, pivot, cmp);
-    quick_sort(array, left, frontier - 1, cmp);
-    quick_sort(array, frontier, right, cmp);
+    int random_i = left + (rand() / (RAND_MAX / (right - left)));
+    int pivot = (*((int *)(array + (left * size))) + *((int *)(array + (((left + right) / 2) * size))) + *((int *)(array + (right * size)))) / 3;
+    int frontier = partition(array, size, left, right, pivot, cmp);
+    quick_sort(array, size, left, frontier - 1, cmp);
+    quick_sort(array, size, frontier, right, cmp);
   }
 }
 
-int partition(int *array, int left, int right, int pivot, int (*cmp)(void *, void *))
+int partition(void *array, size_t size, int left, int right, int pivot, int (*cmp)(void *, void *))
 {
   while(left < right)
   {
-    while(cmp(&array[left], &pivot) <= 0 && left < right)
+    while(cmp(array + (left * size), &pivot) <= 0 && left < right)
       left++;
-    while(cmp(&array[right], &pivot) > 0 && left < right)
+    while(cmp(array + (right * size), &pivot) > 0 && left < right)
       right--;
     if(left < right)
-    {
-      swap(&array[left], &array[right], sizeof(int));
-      left++;
-    }
+      swap(array + (left * size), array + (right * size), size);
   }
   return left;
 }
 
 void swap(void *elem1, void *elem2, size_t size)
 {
-  void *tmp = malloc(size);
-  memcpy(tmp, elem1, size);
+  void *(buffer[size]);
+  memcpy(buffer, elem1, size);
   memcpy(elem1, elem2, size);
-  memcpy(elem2, tmp, size);
-  free(tmp);
+  memcpy(elem2, buffer, size);
 }
 
 void generate_array(int *array, int size)
