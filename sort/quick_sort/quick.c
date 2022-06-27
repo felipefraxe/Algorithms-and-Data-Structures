@@ -1,23 +1,22 @@
 /*
   Code written by Felipe Fraxe Filho
-  Just for learning
+  rightust for learning
 */
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <time.h>
-#include <unistd.h>
 
 #include "quick.h"
 
 // Define Array's size
-#define SIZE 200000
+#define SIZE 2000000
 
 void swap(void *elem1, void *elem2, size_t size);
 void generate_array(int *array, int size);
 void print_array(int *array, int size);
-int intcmp(void *ptr1, void *ptr2); 
+int stringcmp(const void *string1, const void *string2);
+int intcmp(const void *ptr1, const void *ptr2);
 
 int main(void)
 {
@@ -28,51 +27,68 @@ int main(void)
   clock_t t = clock();
   quick_sort(array, sizeof(int), 0, SIZE - 1, intcmp);
   t = clock() - t;
-
   print_array(array, SIZE);
   printf("This method took %lf seconds to sort\n", (double) t / CLOCKS_PER_SEC);
-  return EXIT_SUCCESS;
+
+  return 0;
 }
 
-int intcmp(void *ptr1, void *ptr2)
+int intcmp(const void *num1, const void *num2)
 {
-  int *num1 = ptr1;
-  int *num2 = ptr2;
-  return *num1 - *num2;
+  return *(int *)num1 - *(int *)num2;
 }
 
-void quick_sort(void *array, size_t size, int left, int right, int (*cmp)(void *, void *))
+void quick_sort(void *array, size_t size, int left, int right, int (*cmp)(const void *, const void *))
 {
-  if(left < right)
+  if(left >= right)
+    return;
+  int i = left, j = right;
+  partition(array, size, &i, &j, cmp);
+  if(left < j)
+    quick_sort(array, size, left, j, cmp);
+  if(i < right)
+    quick_sort(array, size, i, right, cmp);
+}
+
+void partition(void *array, size_t size, int *left, int *right, int (*cmp)(const void *, const void *))
+{
+  int mid = *left + ((*right - *left) / 2);
+  void *pivot = array + (mid * size);
+
+  if(cmp((array + (*left * size)), pivot) > 0)
+    swap((array + (*left * size)), pivot, size);
+
+  if(cmp((array + (*right * size)), pivot) < 0)
+    swap((array + (*right * size)), pivot, size);
+
+  if(cmp((array + (*left * size)), pivot) > 0)
+    swap((array + (*left * size)), pivot, size);
+
+  pivot = array + (*right * size);
+  while(*left <= *right)
   {
-    int random_i = left + (rand() / (RAND_MAX / (right - left)));
-    int pivot = (*((int *)(array + (left * size))) + *((int *)(array + (((left + right) / 2) * size))) + *((int *)(array + (right * size)))) / 3;
-    int frontier = partition(array, size, left, right, pivot, cmp);
-    quick_sort(array, size, left, frontier - 1, cmp);
-    quick_sort(array, size, frontier, right, cmp);
+    while(cmp((array + (*left * size)), pivot) < 0)
+      (*left)++;
+    while(cmp((array + (*right * size)), pivot) > 0)
+      (*right)--;
+    if(*left <= *right)
+    {
+      swap((array + (*left * size)), (array + (*right * size)), size);
+      (*left)++;
+      (*right)--;
+    }
   }
-}
-
-int partition(void *array, size_t size, int left, int right, int pivot, int (*cmp)(void *, void *))
-{
-  while(left < right)
-  {
-    while(cmp(array + (left * size), &pivot) <= 0 && left < right)
-      left++;
-    while(cmp(array + (right * size), &pivot) > 0 && left < right)
-      right--;
-    if(left < right)
-      swap(array + (left * size), array + (right * size), size);
-  }
-  return left;
 }
 
 void swap(void *elem1, void *elem2, size_t size)
 {
-  void *(buffer[size]);
-  memcpy(buffer, elem1, size);
-  memcpy(elem1, elem2, size);
-  memcpy(elem2, buffer, size);
+  char *ptr1 = (char *) elem1, *ptr2 = (char *) elem2;
+  while(size-- > 0)
+  {
+    char tmp = *ptr1;
+    *ptr1++ = *ptr2;
+    *ptr2++ = tmp;
+  }
 }
 
 void generate_array(int *array, int size)
