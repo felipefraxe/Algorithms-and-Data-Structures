@@ -53,10 +53,10 @@ int partition(void *array, size_t size, int left, int right, int (*cmp)(const vo
 {
 	int mid = left + (right - left) / 2;
 	if(cmp((array + (left * size)), (array + (mid * size))) > 0)
-    	swap((array + (left * size)), (array + (mid * size)), size);
+		swap((array + (left * size)), (array + (mid * size)), size);
 
   	if(cmp((array + (right * size)), (array + (mid * size))) > 0)
-    	swap((array + (right * size)), (array + (mid * size)), size);
+    		swap((array + (right * size)), (array + (mid * size)), size);
 	else if(cmp((array + (left * size)), (array + (right * size))) > 0)
 		swap((array + (right * size)), (array + (left * size)), size);
 
@@ -64,16 +64,16 @@ int partition(void *array, size_t size, int left, int right, int (*cmp)(const vo
 
   	while(left <= right)
   	{
-    	while(cmp((array + (left * size)), pivot) < 0)
-      		left++;
-    	while(cmp((array + (right * size)), pivot) > 0)
-      		right--;
-    	if(left <= right)
-    	{
-      		swap((array + (left * size)), (array + (right * size)), size);
-      		left++;
-      		right--;
-    	}
+    		while(cmp((array + (left * size)), pivot) < 0)
+      			left++;
+    		while(cmp((array + (right * size)), pivot) > 0)
+      			right--;
+    		if(left <= right)
+    		{
+      			swap((array + (left * size)), (array + (right * size)), size);
+      			left++;
+      			right--;
+    		}
   	}
 	return left;
 }
@@ -83,22 +83,22 @@ void swap(void *elem1, void *elem2, size_t size)
   	char *ptr1 = (char *) elem1, *ptr2 = (char *) elem2;
   	while(size-- > 0)
   	{
-    	char tmp = *ptr1;
-    	*ptr1++ = *ptr2;
-    	*ptr2++ = tmp;
+	    	char tmp = *ptr1;
+    		*ptr1++ = *ptr2;
+    		*ptr2++ = tmp;
   	}
 }
 
 void generate_array(int *array, int size)
 {
   	for(int i = 0; i < size; i++)
-    	array[i] = rand() / (RAND_MAX / size + 1);
+	    	array[i] = rand() / (RAND_MAX / size + 1);
 }
 
 void print_array(int *array, int size)
 {
   	for(int i = 0; i < size; i++)
-    	printf("%d ", array[i]);
+    		printf("%d ", array[i]);
   	printf("\n");
 }
 
