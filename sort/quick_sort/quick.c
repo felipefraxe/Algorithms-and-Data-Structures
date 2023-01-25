@@ -87,22 +87,22 @@ void swap(void *elem1, void *elem2, size_t size)
   	char *ptr1 = (char *) elem1, *ptr2 = (char *) elem2;
   	while(size-- > 0)
   	{
-    	char tmp = *ptr1;
-    	*ptr1++ = *ptr2;
-    	*ptr2++ = tmp;
+	    	char tmp = *ptr1;
+    		*ptr1++ = *ptr2;
+    		*ptr2++ = tmp;
   	}
 }
 
 void generate_array(int *array, int size)
 {
   	for(int i = 0; i < size; i++)
-    	array[i] = rand() / (RAND_MAX / size + 1);
+	    	array[i] = rand() / (RAND_MAX / size + 1);
 }
 
 void print_array(int *array, int size)
 {
   	for(int i = 0; i < size; i++)
-    	printf("%d ", array[i]);
+    		printf("%d ", array[i]);
   	printf("\n");
 }
 
