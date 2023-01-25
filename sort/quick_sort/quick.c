@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 
 #include "quick.h"
 
@@ -28,7 +29,6 @@ int main(void)
 	clock_t t = clock();
   	quick_sort(array, sizeof(int), 0, SIZE - 1, intcmp);
   	t = clock() - t;
-
 	is_sorted(array, SIZE) ? printf("SORTED\n") : printf("NOT SORTED\n");
 
   	printf("This method took %lf seconds to sort\n", (double) t / CLOCKS_PER_SEC);
@@ -40,42 +40,46 @@ int intcmp(const void *num1, const void *num2)
 	return *(int *)num1 - *(int *)num2;
 }
 
-void quick_sort(void *array, size_t size, int left, int right, int (*cmp)(const void *, const void *))
+int stringcmp(const void *str1, const void *str2)
 {
-  	if(left >= right)
-    	return;
-	int p = partition(array, size, left, right, cmp);
-	quick_sort(array, size, left, p-1, cmp);
-	quick_sort(array, size, p, right, cmp);
+	return strcmp(*(char **)str1, *(char **)str2);
 }
 
-int partition(void *array, size_t size, int left, int right, int (*cmp)(const void *, const void *))
+void quick_sort(void *array, size_t size, int low, int high, int (*cmp)(const void *, const void *))
 {
-	int mid = left + (right - left) / 2;
-	if(cmp((array + (left * size)), (array + (mid * size))) > 0)
-    	swap((array + (left * size)), (array + (mid * size)), size);
+  	if(low >= high)
+    	return;
+	int p = partition(array, size, low, high, cmp);
+	quick_sort(array, size, low, p-1, cmp);
+	quick_sort(array, size, p, high, cmp);
+}
 
-  	if(cmp((array + (right * size)), (array + (mid * size))) > 0)
-    	swap((array + (right * size)), (array + (mid * size)), size);
-	else if(cmp((array + (left * size)), (array + (right * size))) > 0)
-		swap((array + (right * size)), (array + (left * size)), size);
+int partition(void *array, size_t size, int low, int high, int (*cmp)(const void *, const void *))
+{
+	int mid = low + (high - low) / 2;
+	if(cmp((array + (low * size)), (array + (mid * size))) > 0)
+    	swap((array + (low * size)), (array + (mid * size)), size);
 
-	void *pivot = array + (right * size);
+  	if(cmp((array + (high * size)), (array + (mid * size))) > 0)
+    	swap((array + (high * size)), (array + (mid * size)), size);
+	else if(cmp((array + (low * size)), (array + (high * size))) > 0)
+		swap((array + (high * size)), (array + (low * size)), size);
 
-  	while(left <= right)
+	void *pivot = array + (high * size);
+	while(low <= high)
   	{
-    	while(cmp((array + (left * size)), pivot) < 0)
-      		left++;
-    	while(cmp((array + (right * size)), pivot) > 0)
-      		right--;
-    	if(left <= right)
+    	while(cmp((array + (low * size)), pivot) < 0)
+      		low++;
+    	while(cmp((array + (high * size)), pivot) > 0)
+      		high--;
+    	if(low <= high)
     	{
-      		swap((array + (left * size)), (array + (right * size)), size);
-      		left++;
-      		right--;
+      		swap((array + (low * size)), (array + (high * size)), size);
+      		low++;
+      		high--;
     	}
   	}
-	return left;
+	return low;
 }
 
 void swap(void *elem1, void *elem2, size_t size)
