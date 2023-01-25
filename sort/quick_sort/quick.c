@@ -16,7 +16,7 @@
 void swap(void *elem1, void *elem2, size_t size);
 void generate_array(int *array, int size);
 void print_array(int *array, int size);
-int stringcmp(const void *string1, const void *string2);
+int stringcmp(const void *str1, const void *str2);
 int intcmp(const void *ptr1, const void *ptr2);
 int is_sorted(int arr[], int length);
 
@@ -48,7 +48,7 @@ int stringcmp(const void *str1, const void *str2)
 void quick_sort(void *array, size_t size, int low, int high, int (*cmp)(const void *, const void *))
 {
   	if(low >= high)
-    	return;
+    		return;
 	int p = partition(array, size, low, high, cmp);
 	quick_sort(array, size, low, p-1, cmp);
 	quick_sort(array, size, p, high, cmp);
@@ -58,26 +58,26 @@ int partition(void *array, size_t size, int low, int high, int (*cmp)(const void
 {
 	int mid = low + (high - low) / 2;
 	if(cmp((array + (low * size)), (array + (mid * size))) > 0)
-    	swap((array + (low * size)), (array + (mid * size)), size);
+    		swap((array + (low * size)), (array + (mid * size)), size);
 
   	if(cmp((array + (high * size)), (array + (mid * size))) > 0)
-    	swap((array + (high * size)), (array + (mid * size)), size);
+    		swap((array + (high * size)), (array + (mid * size)), size);
 	else if(cmp((array + (low * size)), (array + (high * size))) > 0)
 		swap((array + (high * size)), (array + (low * size)), size);
 
 	void *pivot = array + (high * size);
 	while(low <= high)
   	{
-    	while(cmp((array + (low * size)), pivot) < 0)
-      		low++;
-    	while(cmp((array + (high * size)), pivot) > 0)
-      		high--;
-    	if(low <= high)
-    	{
-      		swap((array + (low * size)), (array + (high * size)), size);
-      		low++;
-      		high--;
-    	}
+    		while(cmp((array + (low * size)), pivot) < 0)
+      			low++;
+    		while(cmp((array + (high * size)), pivot) > 0)
+      			high--;
+    		if(low <= high)
+    		{
+      			swap((array + (low * size)), (array + (high * size)), size);
+      			low++;
+	      		high--;
+    		}
   	}
 	return low;
 }
