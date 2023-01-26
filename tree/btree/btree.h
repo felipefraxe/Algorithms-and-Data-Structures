@@ -7,14 +7,14 @@
 // Prototypes for Btree functions
 Btree* search(Btree *root, int key);
 Btree* create_node(void);
-int binary_search_index(int *array, int left, int right, int num);
+int binsearch(int array[], int low, int high, int num);
 void copy_array(Btree *source, Btree *root, int start, int end);
-void insert_sorted(Btree *root, int size, int index, int num);
+void insert_sorted(Btree *node, int index, int num);
 void insert_key(Btree **root, int key, list **parent);
 void split_node(Btree **root, list **parent, int key, int mid);
-void remove_sorted(Btree *root, int size, int index);
-int find_max_min(Btree *root);
-int find_min_max(Btree *root);
+void remove_sorted(Btree *node, int index);
+int find_max_in_min_child(Btree *node);
+int find_min_in_max_child(Btree *node);
 void left_rotation(Btree *root, Btree *sibling, Btree *parent, int parent_index);
 void right_rotation(Btree *root, Btree *sibling, Btree *parent, int parent_index);
 int find_child(Btree *root, Btree *child);

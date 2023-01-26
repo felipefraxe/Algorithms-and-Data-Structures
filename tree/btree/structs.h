@@ -7,16 +7,17 @@
 // Btree Type
 typedef struct Btree
 {
-  int keys[ORDER + 1], keys_count;
-  struct Btree *children[ORDER + 1];
+    int num_keys;
+    int keys[ORDER + 1];
+    struct Btree *children[ORDER + 1];
 }
 Btree;
 
 // List type
 typedef struct list
 {
-  Btree **root;
-  struct list *next;
+    Btree **root;
+    struct list *next;
 }
 list;
 
