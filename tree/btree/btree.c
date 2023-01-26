@@ -23,7 +23,7 @@ int main(void)
       insert_key(&root, num[i], &stack);
   for(int i = 0; i < size; i++)
       remove_key(&root, num[i], &stack);
-  printf_tree(root, 0);
+  printf_tree(root);
   deallocate(root);
   return EXIT_SUCCESS;
 }
@@ -195,19 +195,19 @@ void right_rotation(Btree *root, Btree *sibling, Btree *parent, int parent_index
 
 int find_child(Btree *root, Btree *child)
 {
-  int low = 0, high = root->num_keys + 1;
-  int mid = high / 2;
-  while(low <= high)
-  {
-      if(root->children[mid] == child)
-          return mid;
-      if(root->children[mid]->keys[0] < child->keys[0])
-          low = mid + 1;
-      else
-          high = mid - 1;
-      mid = (high + low) / 2;
-  }
-  return -1;
+    int low = 0, high = root->num_keys + 1;
+    int mid = high / 2;
+    while(low <= high)
+    {
+        if(root->children[mid] == child)
+            return mid;
+        if(root->children[mid]->keys[0] < child->keys[0])
+            low = mid + 1;
+        else
+            high = mid - 1;
+        mid = (high + low) / 2;
+    }
+    return -1;
 }
 
 void adjust_root(Btree *root, list **parent)
@@ -216,171 +216,162 @@ void adjust_root(Btree *root, list **parent)
     int parent_index = find_child(*parent_root, root);
     pull(parent);
 
-    if(parent_index > 0)
+    if(parent_index == 0)
     {
-        sibling = (*parent_root)->children[parent_index-1];
+        sibling = (*parent_root)->children[parent_index+1];
         if(sibling->num_keys > MIN)
-        {
-            right_rotation(root, sibling, *parent_root, parent_index-1);
-            return;
-        }
-        else if(parent_index == (*parent_root)->num_keys)
-        {
+            left_rotation(root, sibling, *parent_root, parent_index);
+        else
             merge_node(parent_root, sibling, root, parent_index, parent);
-            return;
-        }
+        return;
     }
-    sibling = (*parent_root)->children[parent_index+1];
+    sibling = (*parent_root)->children[parent_index-1];
     if(sibling->num_keys > MIN)
-        left_rotation(root, sibling, *parent_root, parent_index);
-    else
+        right_rotation(root, sibling, *parent_root, parent_index-1);
+    else if(parent_index == (*parent_root)->num_keys)
         merge_node(parent_root, sibling, root, parent_index, parent);
 }
 
-void move_array(Btree *source, Btree *root, int end)
+void move_array(Btree *source, Btree *dest, int end)
 {
-  for(int i = 0; i < end; i++)
-  {
-    root->keys[root->num_keys] = source->keys[i];
-    root->children[root->num_keys] = source->children[i];
-    root->num_keys++;
-  }
-  root->children[root->num_keys] = source->children[end];
+    for(int i = 0; i < end; i++)
+    {
+        dest->keys[dest->num_keys] = source->keys[i];
+        dest->children[dest->num_keys] = source->children[i];
+        dest->num_keys++;
+    }
+    dest->children[dest->num_keys] = source->children[end];
+    free(source);
+    source = NULL;
 }
 
 void merge_node(Btree **parent_root, Btree *sibling, Btree *root, int parent_index, list **parent)
 {
-  if(parent_index > 0 && (*parent_root)->children[parent_index-1] == sibling)
-  {
-    sibling->keys[sibling->num_keys++] = (*parent_root)->keys[parent_index-1];
-    move_array(root, sibling, root->num_keys);
-    remove_sorted(*parent_root, parent_index-1);
-    (*parent_root)->children[parent_index-1] = sibling;
-    free(root);
-    root = NULL;
-  }
-  else
-  {
-    root->keys[root->num_keys++] = (*parent_root)->keys[parent_index];
-    move_array(sibling, root, sibling->num_keys);
-    remove_sorted(*parent_root, parent_index);
-    (*parent_root)->children[parent_index] = root;
-    free(sibling);
-    sibling = NULL;
-  }
+    if(parent_index > 0 && (*parent_root)->children[parent_index-1] == sibling)
+    {
+        sibling->keys[sibling->num_keys++] = (*parent_root)->keys[parent_index-1];
+        move_array(root, sibling, root->num_keys);
+        remove_sorted(*parent_root, parent_index-1);
+        (*parent_root)->children[parent_index-1] = sibling;
+    }
+    else
+    {
+        root->keys[root->num_keys++] = (*parent_root)->keys[parent_index];
+        move_array(sibling, root, sibling->num_keys);
+        remove_sorted(*parent_root, parent_index);
+        (*parent_root)->children[parent_index] = root;
+    }
 
-  if(!*parent && (*parent_root)->num_keys == 0)
-  {
-    free(*parent_root);
-    *parent_root = sibling ? sibling : root;
-  }
-  else if(*parent && (*parent_root)->num_keys < MIN)
-    adjust_root(*parent_root, parent);
+    if(*parent == NULL && (*parent_root)->num_keys == 0)
+    {
+        free(*parent_root);
+        *parent_root = sibling != NULL ? sibling : root;
+    }
+    else if(*parent != NULL && (*parent_root)->num_keys < MIN)
+        adjust_root(*parent_root, parent);
 }
 
 void remove_key(Btree **root, int key, list **parent)
 {
-  int index, parent_index, max_min;
-  Btree *sibling, **parent_address;
+    int index, parent_index, max_min;
+    Btree *sibling, **parent_address;
 
-  if(*root)
-  {
+    if(*root == NULL)
+      return;
+
     index = binsearch((*root)->keys, 0, (*root)->num_keys - 1, key);
     if(index < (*root)->num_keys && (*root)->keys[index] == key)
     {
-      if(!(*root)->children[index])
-      {
-        remove_sorted(*root, index);
-        if((*root)->num_keys >= MIN || !*parent)
+        if((*root)->children[index] == NULL)
         {
-          if((*root)->num_keys == 0)
-          {
-            free(*root);
-            *root = NULL;
-          }
-          return;
-        }
-        parent_address = (*parent)->root;
-        pull(parent);
-        parent_index = find_child(*parent_address, *root);
-        if(parent_index > 0)
-        {
-          sibling = (*parent_address)->children[parent_index-1];
-          if(sibling->num_keys > MIN)
-          {
-            right_rotation(*root, sibling, *parent_address, parent_index-1);
+            remove_sorted(*root, index);
+            if((*root)->num_keys >= MIN || *parent == NULL)
+            {
+                if((*root)->num_keys == 0)
+                {
+                    free(*root);
+                    *root = NULL; 
+                }
+                return;
+            }
+            parent_address = (*parent)->root;
+            pull(parent);
+            parent_index = find_child(*parent_address, *root);
+            if(parent_index > 0)
+            {
+                sibling = (*parent_address)->children[parent_index-1];
+                if(sibling->num_keys > MIN)
+                {
+                    right_rotation(*root, sibling, *parent_address, parent_index-1);
+                    return;
+                }
+                if(parent_index == (*parent_address)->num_keys)
+                {
+                    merge_node(parent_address, sibling, *root, parent_index, parent);
+                    return;
+                }
+            }
+            sibling = (*parent_address)->children[parent_index+1];
+            if(sibling->num_keys > MIN)
+                left_rotation(*root, sibling, *parent_address, parent_index);
+            else
+                merge_node(parent_address, sibling, *root, parent_index, parent);
             return;
-          }
-          if(parent_index == (*parent_address)->num_keys)
-          {
-            merge_node(parent_address, sibling, *root, parent_index, parent);
-            return;
-          }
         }
-        sibling = (*parent_address)->children[parent_index+1];
-        if(sibling->num_keys > MIN)
-          left_rotation(*root, sibling, *parent_address, parent_index);
-        else
-          merge_node(parent_address, sibling, *root, parent_index, parent);
-        return;
-      }
-      else
-      {
-        if((*root)->children[index]->num_keys > MIN)
-            (*root)->keys[index] = key = find_max_in_min_child((*root)->children[index]);
         else
         {
-            (*root)->keys[index] = key = find_min_in_max_child((*root)->children[index + 1]);
-            index++;
+            if((*root)->children[index]->num_keys > MIN)
+            {
+                key = find_max_in_min_child((*root)->children[index]);
+                (*root)->keys[index] = key;
+            }
+            else
+            {
+                key = find_min_in_max_child((*root)->children[index + 1]);
+                (*root)->keys[index] = key;
+                index++;
+            }
         }
-      }
     }
     push(parent, new_node(root));
     remove_key(&(*root)->children[index], key, parent);
     pull(parent);
-  }
 }
 
 Btree* search(Btree *root, int key)
 {
-  if(root)
-  {
     int index;
-    while(root)
+    while(root != NULL)
     {
-      index = binsearch(root->keys, 0, root->num_keys - 1, key);
-      if(root->keys[index] == key)
-        return root;
-      root = root->children[index];
+        index = binsearch(root->keys, 0, root->num_keys - 1, key);
+        if(root->keys[index] == key)
+            return root;
+        root = root->children[index];
     }
-  }
-  return root;
+    return root;
 }
 
-void printf_tree(Btree *root, int index)
+void printf_tree(Btree *root)
 {
-  int keys_size, children_size;
-  if(root)
-  {
-    keys_size = root->num_keys;
-    children_size = keys_size + 1;
-    if(index < children_size)
+    if(root == NULL)
+        return;
+
+    int i = 0;
+    printf_tree(root->children[i]);
+    while(i < root->num_keys)
     {
-      printf_tree(root->children[index], 0);
-      if(index < keys_size)
-        printf("%d\n", root->keys[index]);
-      printf_tree(root, index + 1);
+        printf("%d\n", root->keys[i]);
+        printf_tree(root->children[++i]);
     }
-  }
 }
 
 void deallocate(Btree *root)
 {
-  if(root)
-  {
+    if(root == NULL)
+        return;
+
     int children_size = root->num_keys + 1;
-    for(int i = 0; root->children[i] && i < children_size; i++)
+    for(int i = 0; root->children[i] != NULL && i < children_size; i++)
         deallocate(root->children[i]);
     free(root);
-  }
 }

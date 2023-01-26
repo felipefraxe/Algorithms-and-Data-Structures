@@ -19,10 +19,10 @@ void left_rotation(Btree *root, Btree *sibling, Btree *parent, int parent_index)
 void right_rotation(Btree *root, Btree *sibling, Btree *parent, int parent_index);
 int find_child(Btree *root, Btree *child);
 void adjust_root(Btree *root, list **parent);
-void move_array(Btree *source, Btree *root, int end);
+void move_array(Btree *source, Btree *dest, int end);
 void merge_node(Btree **parent_root, Btree *sibling, Btree *root, int parent_index, list **parent);
 void remove_key(Btree **root, int key, list **parent);
-void printf_tree(Btree *root, int index);
+void printf_tree(Btree *root);
 void deallocate(Btree *root);
 
 #endif
