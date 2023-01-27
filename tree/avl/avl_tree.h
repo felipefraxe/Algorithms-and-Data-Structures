@@ -3,8 +3,8 @@
 
 typedef struct avl_tree
 {
-  int key;
-  struct avl_tree *left, *right;
+    int key;
+    struct avl_tree *left, *right;
 }
 avl_tree;
 
@@ -23,8 +23,5 @@ void insert_node(avl_tree **root, avl_tree *n);
 void balance(avl_tree **root);
 void printf_tree(avl_tree *root);
 void deallocate(avl_tree *root);
-
-// Initialize tree
-avl_tree *root = NULL;
 
 #endif
