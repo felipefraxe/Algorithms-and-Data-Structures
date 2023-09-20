@@ -7,10 +7,10 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
+#include "heap.h"
 
 #define SIZE 1000000
 
-#include "heap.h"
 void swap(int *elem1, int *elem2);
 void generate_array(int *array, int size);
 void print_array(int *array, int size);
@@ -20,8 +20,10 @@ int main(void)
   srand(time(0));
   int array[SIZE];
   generate_array(array, SIZE);
+  print_array(array, SIZE);
   clock_t t = clock();
   heap_sort(array, SIZE);
+  build_heap(array, SIZE);
   t = clock() - t;
   print_array(array, SIZE);
   printf("This method took %lf seconds to sort\n", (double) t / CLOCKS_PER_SEC);
