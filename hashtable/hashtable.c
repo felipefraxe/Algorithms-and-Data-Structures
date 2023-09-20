@@ -1,6 +1,5 @@
 #include "hashtable.h"
 
-
 size_t wcshash(wchar_t *key, size_t length)
 {
     size_t index = 5381;
@@ -21,7 +20,7 @@ size_t strhash(char *key, size_t length)
 }
 
 
-HTable_Node *htable_create_data(char *key, char *value)
+HTable_Data *htable_create_data(char *key, char *value)
 {
     HTable_Data *data = malloc(sizeof(HTable_Data));
     if(data == NULL)
@@ -44,7 +43,15 @@ HTable_Node *htable_create_data(char *key, char *value)
 }
 
 
-HTable_Node *htable_create_node(HTable_Node *data)
+void htable_deallocate_data(HTable_Data *data)
+{
+    free(data->key);
+    free(data->value);
+    free(data);
+}
+
+
+HTable_Node *htable_create_node(HTable_Data *data)
 {
     HTable_Node *node = malloc(sizeof(HTable_Node));
     if(node == NULL)
@@ -88,9 +95,7 @@ void htable_delete_node(HTable_Node **hashtable, size_t length, void *key, int (
     {
         if(cmp(tmp->data->key, key) == 0)
         {
-            free(tmp->data->key);
-            free(tmp->data->value);
-            free(tmp->data);
+            htable_deallocate_data(tmp->data);
             if(previous != NULL)
                 previous->next = tmp->next;
             else
@@ -104,7 +109,7 @@ void htable_delete_node(HTable_Node **hashtable, size_t length, void *key, int (
 }
 
 
-HTable_Node *htable_search_node(HTable_Node **hash_table, size_t length, void *key, int (*cmp)(const void *, const void *), size_t (*hash)(const void *, size_t))
+HTable_Data *htable_search_node(HTable_Node **hash_table, size_t length, void *key, int (*cmp)(const void *, const void *), size_t (*hash)(const void *, size_t))
 {
     size_t index = hash(key, length);
     for(HTable_Node *tmp = hash_table[index]; tmp != NULL; tmp = tmp->next)
@@ -123,9 +128,7 @@ void htable_deallocate(HTable_Node **hashtable, size_t length)
         while(hashtable[i] != NULL)
         {
             HTable_Node *tmp = hashtable[i]->next;
-            free(hashtable[i]->data->key);
-            free(hashtable[i]->data->value);
-            free(hashtable[i]->data);
+            htable_deallocate_data(hashtable[i]->data);
             free(hashtable[i]);
             hashtable[i] = tmp;
         }
