@@ -151,45 +151,18 @@ void _list_remove_node(ListNode *node)
 
 void list_remove(List *self, int key)
 {
-    ListNode *head = self->head;
-    ListNode *tail = self->tail;
-
-    if (key == head->key)
-    {
+    if (key == self->head->key)
         list_pop_front(self);
-        return;
-    }
-
-    if (key == tail->key)
-    {
+    else if (key == self->tail->key)
         list_pop_back(self);
-        return;
-    }
-
-    while (head != tail)
+    else
     {
-        if (key == head->key)
+        ListNode *node = self->get(self, key);
+        if (node != nullptr)
         {
-            _list_remove_node(head);
+            _list_remove_node(node);
             self->length--;
-            return;
         }
-
-        if (key == tail->key)
-        {
-            _list_remove_node(tail);
-            self->length--;
-            return;
-        }
-
-        head = head->next;
-        tail = tail->prev;
-    }
-
-    if (key == head->key)
-    {
-        _list_remove_node(head);
-        self->length--;
     }
 }
 

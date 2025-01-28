@@ -18,10 +18,11 @@ typedef struct Trie
 } Trie;
 
 Trie trie_constructor(void);
-Trie_Node *trie_create_node(void);
 bool trie_insert(const char *str, Trie *trie);
 bool trie_search(const char *str, Trie *trie);
 bool trie_unload(Trie *trie);
+
+Trie_Node *trie_create_node(void);
 void trie_unloader(Trie_Node *curr);
 
 #endif
