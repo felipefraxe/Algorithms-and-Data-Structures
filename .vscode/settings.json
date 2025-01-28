@@ -1,6 +1,17 @@
 {
     "C_Cpp.errorSquiggles": "disabled",
     "files.associations": {
-        "__config": "c"
+        "__config": "c",
+        "__node_handle": "c",
+        "__split_buffer": "c",
+        "array": "c",
+        "deque": "c",
+        "list": "c",
+        "queue": "c",
+        "stack": "c",
+        "string": "c",
+        "string_view": "c",
+        "unordered_map": "c",
+        "vector": "c"
     }
 }

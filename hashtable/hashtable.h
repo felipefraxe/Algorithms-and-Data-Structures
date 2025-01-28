@@ -6,14 +6,12 @@
 #include <string.h>
 #include <wchar.h>
 
-
 typedef struct HTable_Data
 {
     char *key;
     char *value;
 }
 HTable_Data;
-
 
 typedef struct HTable_Node
 {
