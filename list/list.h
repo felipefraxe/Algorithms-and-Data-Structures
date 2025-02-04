@@ -2,47 +2,34 @@
 #define LIST_H
 
 // prototypes for linked lists operations and struct definition
-typedef struct ListNode
+typedef struct list_node
 {
     int key;
-    struct ListNode *next;
-    struct ListNode *prev;
-} ListNode;
+    struct list_node *next;
+    struct list_node *prev;
+} list_node_t;
 
-typedef struct List
+typedef struct list
 {
-    ListNode *head;
-    ListNode *tail;
+    list_node_t *sentinel;
     unsigned int length;
+} list_t;
 
-    void(*clear)(struct List *);
-    bool(*empty)(struct List *);
-    ListNode *(*get)(struct List *, int key);
-    void(*pop_back)(struct List *);
-    void(*pop_front)(struct List *);
-    void(*print)(struct List *);
-    void(*push_back)(struct List *, ListNode *);
-    void(*push_front)(struct List *, ListNode *);
-    void(*remove)(struct List *, int key);
-    void(*reverse)(struct List *);
-    void(*sort)(struct List *);
-} List;
+list_t list_init(void);
 
-List list_init(void);
+list_node_t *list_create_node(int key);
+void list_clear(list_t *list);
+bool list_empty(list_t *list);
+list_node_t *list_get(list_t *list, int key);
+void list_pop_back(list_t *list);
+void list_pop_front(list_t *list);
+void list_print(list_t *list);
+void list_push_back(list_t *list, list_node_t *node);
+void list_push_front(list_t *list, list_node_t *node);
+void list_remove(list_t *list, int key);
+void list_reverse(list_t *list);
+void list_sort(list_t *list);
 
-ListNode *list_create_node(int key);
-void list_clear(List *self);
-bool list_empty(List *self);
-ListNode *list_get(List *self, int key);
-void list_pop_back(List *self);
-void list_pop_front(List *self);
-void list_print(List *self);
-void list_push_back(List *self, ListNode *node);
-void list_push_front(List *self, ListNode *node);
-void list_remove(List *self, int key);
-void list_reverse(List *self);
-void list_sort(List *self);
-
-void _list_remove_node(ListNode *node);
+static void list_remove_node(list_node_t *node);
 
 #endif

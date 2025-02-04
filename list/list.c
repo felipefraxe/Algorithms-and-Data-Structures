@@ -9,58 +9,54 @@
 
 #include "list.h"
 
-List list_init(void)
+list_t list_init(void)
 {
-    return (List){
-        .head = nullptr,
-        .tail = nullptr,
-        .length = 0,
+    list_t list;
+    list.sentinel = malloc(sizeof(list_node_t));
+    if (list.sentinel == nullptr)
+    {
+        fprintf(stderr, "Memory allocation failed\n");
+        exit(EXIT_FAILURE);
+    }
 
-        .clear = list_clear,
-        .empty = list_empty,
-        .get = list_get,
-        .pop_back = list_pop_back,
-        .pop_front = list_pop_front,
-        .print = list_print,
-        .push_back = list_push_back,
-        .push_front = list_push_front,
-        .remove = list_remove,
-        .reverse = list_reverse,
-        .sort = list_sort};
+    list.sentinel->next = list.sentinel;
+    list.sentinel->prev = list.sentinel;
+    list.length = 0;
+
+    return list;
 }
 
-ListNode *list_create_node(int key)
+list_node_t *list_create_node(int key)
 {
-    ListNode *node = malloc(sizeof(ListNode));
+    list_node_t *node = calloc(1, sizeof(list_node_t));
     if (node == nullptr)
     {
         fprintf(stderr, "Could not allocate memory for node. Something went wrong\n");
         return nullptr;
     }
     node->key = key;
-    node->next = nullptr;
-    node->prev = nullptr;
+
     return node;
 }
 
-void list_clear(List *self)
+void list_clear(list_t *list)
 {
-    while (self->head != nullptr)
-        list_pop_front(self);
+    while (list->head != nullptr)
+        list_pop_front(list);
 
-    self->tail = nullptr;
-    self->length = 0;
+    list->tail = nullptr;
+    list->length = 0;
 }
 
-bool list_empty(List *self)
+bool list_empty(list_t *list)
 {
-    return self->length == 0;
+    return list->length == 0;
 }
 
-ListNode *list_get(List *list, int key)
+list_node_t *list_get(list_t *list, int key)
 {
-    ListNode *head = list->head;
-    ListNode *tail = list->tail;
+    list_node_t *head = list->head;
+    list_node_t *tail = list->tail;
     while (head != tail)
     {
         if (key == head->key)
@@ -76,71 +72,71 @@ ListNode *list_get(List *list, int key)
     return nullptr;
 }
 
-void list_pop_back(List *self)
+void list_pop_back(List *list)
 {
-    ListNode *tmp = self->tail;
-    self->tail = tmp->prev;
-    if (self->tail != nullptr)
-        self->tail->next = nullptr;
+    list_node_t *tmp = list->tail;
+    list->tail = tmp->prev;
+    if (list->tail != nullptr)
+        list->tail->next = nullptr;
     else
-        self->head = nullptr;
+        list->head = nullptr;
     free(tmp);
 
-    self->length--;
+    list->length--;
 }
 
-void list_pop_front(List *self)
+void list_pop_front(List *list)
 {
-    ListNode *tmp = self->head;
-    self->head = tmp->next;
-    if (self->head != nullptr)
-        self->head->prev = nullptr;
+    list_node_t *tmp = list->head;
+    list->head = tmp->next;
+    if (list->head != nullptr)
+        list->head->prev = nullptr;
     else
-        self->tail = nullptr;
+        list->tail = nullptr;
     free(tmp);
 
-    self->length--;
+    list->length--;
 }
 
-void list_print(List *self)
+void list_print(list_t *list)
 {
-    for (ListNode *node = self->head; node != nullptr; node = node->next)
+    for (list_node_t *node = list->head; node != nullptr; node = node->next)
         printf("%d ", node->key);
     printf("\n");
 }
 
-void list_push_back(List *self, ListNode *node)
+void list_push_back(list_t *list, list_node_t *node)
 {
-    if (self->tail == nullptr)
-        self->tail = self->head = node;
+    if (list->tail == nullptr)
+        list->tail = list->head = node;
     else
     {
-        node->prev = self->tail;
-        self->tail->next = node;
-        self->tail = node;
+        node->prev = list->tail;
+        list->tail->next = node;
+        list->tail = node;
     }
 
-    self->length++;
+    list->length++;
 }
 
-void list_push_front(List *self, ListNode *node)
+void list_push_front(list_t *list, list_node_t *node)
 {
-    if (self->head == nullptr)
-        self->head = self->tail = node;
+    if (list->head == nullptr)
+        list->head = list->tail = node;
     else
     {
-        node->next = self->head;
-        self->head->prev = node;
-        self->head = node;
+        node->next = list->head;
+        list->head->prev = node;
+        list->head = node;
     }
 
-    self->length++;
+    list->length++;
 }
 
-void _list_remove_node(ListNode *node)
+static void list_remove_node(list_node_t *node)
 {
-    ListNode *prev = node->prev;
-    ListNode *next = node->next;
+    list_node_t *prev = node->prev;
+    list_node_t *next = node->next;
 
     if (next != nullptr)
         next->prev = prev;
@@ -149,27 +145,27 @@ void _list_remove_node(ListNode *node)
     free(node);
 }
 
-void list_remove(List *self, int key)
+void list_remove(List *list, int key)
 {
-    if (key == self->head->key)
-        list_pop_front(self);
-    else if (key == self->tail->key)
-        list_pop_back(self);
+    if (key == list->head->key)
+        list_pop_front(list);
+    else if (key == list->tail->key)
+        list_pop_back(list);
     else
     {
-        ListNode *node = self->get(self, key);
+        list_node_t *node = list->get(list, key);
         if (node != nullptr)
         {
-            _list_remove_node(node);
-            self->length--;
+            list_remove_node(node);
+            list->length--;
         }
     }
 }
 
-void list_reverse(List *self)
+void list_reverse(list_t *list)
 {
-    ListNode *curr = self->head;
-    ListNode *tmp = nullptr;
+    list_node_t *curr = list->head;
+    list_node_t *tmp = nullptr;
 
     while (curr != nullptr)
     {
@@ -179,15 +175,15 @@ void list_reverse(List *self)
         curr = curr->prev;
     }
 
-    tmp = self->head;
-    self->head = self->tail;
-    self->tail = tmp;
+    tmp = list->head;
+    list->head = list->tail;
+    list->tail = tmp;
 }
 
-ListNode *_list_merge(ListNode *first, ListNode *second)
+static list_node_t *list_merge(list_node_t *first, list_node_t *second)
 {
-    ListNode dummy = {0, nullptr, nullptr};
-    ListNode *curr = &dummy;
+    list_node_t dummy = {0, nullptr, nullptr};
+    list_node_t *curr = &dummy;
 
     while (first != nullptr && second != nullptr)
     {
@@ -222,20 +218,20 @@ ListNode *_list_merge(ListNode *first, ListNode *second)
     return dummy.next;
 }
 
-ListNode *_list_split(ListNode *head)
+static list_node_t *list_split(list_node_t *head)
 {
     if (head == nullptr || head->next == nullptr)
         return nullptr;
 
-    ListNode *fast = head;
-    ListNode *slow = head;
+    list_node_t *fast = head;
+    list_node_t *slow = head;
     while (fast->next != nullptr && fast->next->next != nullptr)
     {
         fast = fast->next->next;
         slow = slow->next;
     }
 
-    ListNode *second = slow->next;
+    list_node_t *second = slow->next;
     slow->next = nullptr;
     if (second != nullptr)
         second->prev = nullptr;
@@ -243,25 +239,25 @@ ListNode *_list_split(ListNode *head)
     return second;
 }
 
-ListNode *_list_msort(ListNode *node)
+static list_node_t *list_msort(list_node_t *node)
 {
     if (node == nullptr || node->next == nullptr)
         return node;
 
-    ListNode *second = _list_split(node);
+    list_node_t *second = list_split(node);
 
-    ListNode *first = _list_msort(node);
-    second = _list_msort(second);
+    list_node_t *first = list_msort(node);
+    second = list_msort(second);
 
-    return _list_merge(first, second);
+    return list_merge(first, second);
 }
 
-void list_sort(List *self)
+void list_sort(list_t *list)
 {
-   self->head = _list_msort(self->head);
+   list->head = list_msort(list->head);
 
-    ListNode *node = self->head;
+    list_node_t *node = list->head;
     while (node->next != nullptr)
         node = node->next;
-    self->tail = node;
+    list->tail = node;
 }
