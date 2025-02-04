@@ -107,31 +107,24 @@ void list_print(list_t *list)
 
 void list_push_back(list_t *list, list_node_t *node)
 {
-    if (list->tail == nullptr)
-        list->tail = list->head = node;
-    else
-    {
-        node->prev = list->tail;
-        list->tail->next = node;
-        list->tail = node;
-    }
+    node->prev = list->sentinel->prev;
+    node->next = list->sentinel;
+    list->sentinel->prev->next = node;
+    list->sentinel->prev = node;
 
     list->length++;
 }
 
 void list_push_front(list_t *list, list_node_t *node)
 {
-    if (list->head == nullptr)
-        list->head = list->tail = node;
-    else
-    {
-        node->next = list->head;
-        list->head->prev = node;
-        list->head = node;
-    }
+    node->next = list->sentinel->next;
+    node->prev = list->sentinel;
+    list->sentinel->next->prev = node;
+    list->sentinel->next = node;
 
     list->length++;
 }
+
 
 static void list_remove_node(list_node_t *node)
 {
