@@ -9,28 +9,75 @@
 
 #include "list.h"
 
-list_t *list_init(void)
+static list_node_t *node_alloc(int key)
 {
-    list_t *list = malloc(sizeof(list_t));
-    if (list == nullptr)
-        return nullptr
+    list_node_t *node = malloc(sizeof(list_node_t));
+    node->key = key;
+    return node;
+}
 
-    list->sentinel = malloc(sizeof(list_node_t));
-    if (list->sentinel == nullptr)
-        return nullptr;
+static void unlink_node(list_node_t *node)
+{
+    node->prev->next = node->next;
+    node->next->prev = node->prev;
+    free(node);
+}
 
-    list->sentinel->next = list->sentinel;
-    list->sentinel->prev = list->sentinel;
-    list->length = 0;
+static void link_node(list_node_t *anchor, list_node_t *node)
+{
+    anchor->prev->next = node;
+    node->prev = anchor->prev;
+    node->next = anchor;
+    anchor->prev = node;
+}
+
+static list_node_t *list_node_at(list_t *list, size_t pos)
+{
+    list_node_t *curr;
+    if (pos > list->length / 2)
+    {
+        curr = list->sentinel->prev;
+        for (size_t i = list->length - 1; i > pos; i--)
+            curr = curr->prev;
+    }
+    else
+    {
+        curr = list->sentinel->next;
+        for (size_t i = 0; i < pos; i++)
+            curr = curr->next;
+    }
+
+    return curr;
+}
+
+inline bool list_empty(list_t *list)
+{
+    return list->length == 0;
+}
+
+void list_free(list_t *list)
+{
+    list_node_t *node = list->sentinel->next;
+    while (node != list->sentinel)
+    {
+        list_node_t *next = node->next;
+        free(node);
+        node = next;
+    }
+    free(list->sentinel);
+}
+
+list_t list_init(void)
+{
+    list_t list = {.sentinel = malloc(sizeof(list_node_t)), .length = 0};
+    list.sentinel->next = list.sentinel;
+    list.sentinel->prev = list.sentinel;
 
     return list;
 }
 
-void list_destroy(list_t *list)
+void list_remove_all(list_t *list)
 {
-    if (list == nullptr)
-        return;
-
     list_node_t *node = list->sentinel->next;
     while (node != list->sentinel)
     {
@@ -39,76 +86,91 @@ void list_destroy(list_t *list)
         node = next;
     }
 
-    free(list->sentinel);
-    free(list);
-}
-
-static list_node_t *list_create_node(int key)
-{
-    list_node_t *node = malloc(sizeof(list_node_t));
-    node->key = key;
-
-    return node;
-}
-
-/* void list_clear(list_t *list)
-{
-    while (list->head != nullptr)
-        list_pop_front(list);
-
-    list->tail = nullptr;
+    list->sentinel->next = list->sentinel;
+    list->sentinel->prev = list->sentinel;
     list->length = 0;
-} */
-
-bool list_empty(list_t *list)
-{
-    return list->length == 0;
 }
 
-/* list_node_t *list_get(list_t *list, int key)
+void list_insert_at(list_t *list, int key, size_t pos)
 {
-    list_node_t *head = list->head;
-    list_node_t *tail = list->tail;
-    while (head != tail)
+    if (pos > list->length)
+        return;
+
+    list_node_t *anchor = list_node_at(list, pos);
+    list_node_t *node = node_alloc(key);
+    link_node(anchor, node);
+    list->length++;
+}
+
+void list_push_back(list_t *list, int key)
+{
+    list_node_t *node = node_alloc(key);
+    link_node(list->sentinel, node);
+    list->length++;
+}
+
+void list_push_front(list_t *list, int key)
+{
+    list_node_t *head = list->sentinel->next;
+    list_node_t *node = node_alloc(key);
+    link_node(head, node);
+    list->length++;
+}
+
+void list_remove_at(list_t *list, size_t pos)
+{
+    if (list_empty(list) || pos >= list->length)
+        return;
+
+    list_node_t *node = list_node_at(list, pos);
+    unlink_node(node);
+    list->length--;
+}
+
+void list_pop_back(list_t *list)
+{
+    if (list_empty(list))
+        return;
+
+    list_node_t *tail = list->sentinel->prev;
+    unlink_node(tail);
+    list->length--;
+}
+
+void list_pop_front(list_t *list)
+{
+    if (list_empty(list))
+        return;
+
+    list_node_t *head = list->sentinel->next;
+    unlink_node(head);
+    list->length--;
+}
+
+void list_remove_key(list_t *list, int key)
+{
+    list_node_t *curr = list->sentinel->next;
+    while (curr != list->sentinel)
     {
-        if (key == head->key)
-            return head;
-        if (key == tail->key)
-            return tail;
-        head = head->next;
-        tail = tail->prev;
+        if (key == curr->key)
+        {
+            unlink_node(curr);
+            list->length--;
+            return;
+        }
+
+        curr = curr->next;
     }
+}
 
-    if (key == head->key)
-        return head;
-    return nullptr;
-} */
-
-/* void list_pop_back(List *list)
+int list_key_at(list_t *list, size_t pos)
 {
-    list_node_t *tmp = list->tail;
-    list->tail = tmp->prev;
-    if (list->tail != nullptr)
-        list->tail->next = nullptr;
-    else
-        list->head = nullptr;
-    free(tmp);
+    if (pos >= list->length)
+        return 0;
 
-    list->length--;
-} */
-
-/* void list_pop_front(List *list)
-{
-    list_node_t *tmp = list->head;
-    list->head = tmp->next;
-    if (list->head != nullptr)
-        list->head->prev = nullptr;
-    else
-        list->tail = nullptr;
-    free(tmp);
-
-    list->length--;
-} */
+    list_node_t *node = list_node_at(list, pos);
+    return node->key;
+}
 
 void list_print(list_t *list)
 {
@@ -116,59 +178,6 @@ void list_print(list_t *list)
         printf("%d ", node->key);
     printf("\n");
 }
-
-void list_push_back(list_t *list, int key)
-{
-    list_node_t *node = list_create_node(key);
-
-    node->prev = list->sentinel->prev;
-    node->next = list->sentinel;
-    list->sentinel->prev->next = node;
-    list->sentinel->prev = node;
-
-    list->length++;
-}
-
-void list_push_front(list_t *list, int key)
-{
-    list_node_t *node = list_create_node(key);
-
-    node->next = list->sentinel->next;
-    node->prev = list->sentinel;
-    list->sentinel->next->prev = node;
-    list->sentinel->next = node;
-
-    list->length++;
-}
-
-/* static void list_remove_node(list_node_t *node)
-{
-    list_node_t *prev = node->prev;
-    list_node_t *next = node->next;
-
-    if (next != nullptr)
-        next->prev = prev;
-    if (prev != nullptr)
-        prev->next = next;
-    free(node);
-} */
-
-/* void list_remove(List *list, int key)
-{
-    if (key == list->head->key)
-        list_pop_front(list);
-    else if (key == list->tail->key)
-        list_pop_back(list);
-    else
-    {
-        list_node_t *node = list->get(list, key);
-        if (node != nullptr)
-        {
-            list_remove_node(node);
-            list->length--;
-        }
-    }
-} */
 
 /* void list_reverse(list_t *list)
 {
