@@ -50,6 +50,78 @@ static list_node_t *list_node_at(list_t *list, size_t pos)
     return curr;
 }
 
+/* static list_node_t *list_merge(list_node_t *first, list_node_t *second)
+{
+    list_node_t dummy = {0, nullptr, nullptr};
+    list_node_t *curr = &dummy;
+
+    while (first != nullptr && second != nullptr)
+    {
+        if (first->key < second->key)
+        {
+            curr->next = first;
+            first->prev = curr;
+            first = first->next;
+        }
+        else
+        {
+            curr->next = second;
+            second->prev = curr;
+            second = second->next;
+        }
+
+        curr = curr->next;
+    }
+
+    if (first != nullptr)
+    {
+        curr->next = first;
+        first->prev = curr;
+    }
+
+    if (second != nullptr)
+    {
+        curr->next = second;
+        second->prev = curr;
+    }
+
+    return dummy.next;
+}
+
+static list_node_t *list_split(list_node_t *head)
+{
+    if (head == nullptr || head->next == nullptr)
+        return nullptr;
+
+    list_node_t *fast = head;
+    list_node_t *slow = head;
+    while (fast->next != nullptr && fast->next->next != nullptr)
+    {
+        fast = fast->next->next;
+        slow = slow->next;
+    }
+
+    list_node_t *second = slow->next;
+    slow->next = nullptr;
+    if (second != nullptr)
+        second->prev = nullptr;
+
+    return second;
+}
+
+static list_node_t *list_msort(list_node_t *node)
+{
+    if (node == nullptr || node->next == nullptr)
+        return node;
+
+    list_node_t *second = list_split(node);
+
+    list_node_t *first = list_msort(node);
+    second = list_msort(second);
+
+    return list_merge(first, second);
+} */
+
 inline bool list_empty(list_t *list)
 {
     return list->length == 0;
@@ -174,100 +246,26 @@ int list_key_at(list_t *list, size_t pos)
 
 void list_print(list_t *list)
 {
-    for (list_node_t *node = list->sentinel->next; node != list->sentinel; node = node->next)
+    list_node_t *node = list->sentinel->next;
+    while (node != list->sentinel)
+    {
         printf("%d ", node->key);
+        node = node->next;
+    }
     printf("\n");
 }
 
-/* void list_reverse(list_t *list)
+void list_reverse(list_t *list)
 {
-    list_node_t *curr = list->head;
-    list_node_t *tmp = nullptr;
-
-    while (curr != nullptr)
+    list_node_t *curr = list->sentinel;
+    do
     {
-        tmp = curr->prev;
-        curr->prev = curr->next;
-        curr->next = tmp;
-        curr = curr->prev;
-    }
-
-    tmp = list->head;
-    list->head = list->tail;
-    list->tail = tmp;
-} */
-
-/* static list_node_t *list_merge(list_node_t *first, list_node_t *second)
-{
-    list_node_t dummy = {0, nullptr, nullptr};
-    list_node_t *curr = &dummy;
-
-    while (first != nullptr && second != nullptr)
-    {
-        if (first->key < second->key)
-        {
-            curr->next = first;
-            first->prev = curr;
-            first = first->next;
-        }
-        else
-        {
-            curr->next = second;
-            second->prev = curr;
-            second = second->next;
-        }
-
-        curr = curr->next;
-    }
-
-    if (first != nullptr)
-    {
-        curr->next = first;
-        first->prev = curr;
-    }
-
-    if (second != nullptr)
-    {
-        curr->next = second;
-        second->prev = curr;
-    }
-
-    return dummy.next;
-} */
-
-/* static list_node_t *list_split(list_node_t *head)
-{
-    if (head == nullptr || head->next == nullptr)
-        return nullptr;
-
-    list_node_t *fast = head;
-    list_node_t *slow = head;
-    while (fast->next != nullptr && fast->next->next != nullptr)
-    {
-        fast = fast->next->next;
-        slow = slow->next;
-    }
-
-    list_node_t *second = slow->next;
-    slow->next = nullptr;
-    if (second != nullptr)
-        second->prev = nullptr;
-
-    return second;
-} */
-
-/* static list_node_t *list_msort(list_node_t *node)
-{
-    if (node == nullptr || node->next == nullptr)
-        return node;
-
-    list_node_t *second = list_split(node);
-
-    list_node_t *first = list_msort(node);
-    second = list_msort(second);
-
-    return list_merge(first, second);
-} */
+        list_node_t *tmp = curr->next;
+        curr->next = curr->prev;
+        curr->prev = tmp;
+        curr = tmp;
+    } while (curr != list->sentinel);
+}
 
 /* void list_sort(list_t *list)
 {

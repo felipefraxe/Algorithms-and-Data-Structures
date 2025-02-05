@@ -37,6 +37,7 @@ int list_key_at(list_t *list, size_t pos);
 
 // Utils
 void list_print(list_t *list);
+void list_reverse(list_t *list);
 
 //list_node_t *list_get(list_t *list, int key);
 //void list_reverse(list_t *list);
