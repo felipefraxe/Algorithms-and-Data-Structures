@@ -18,7 +18,7 @@ typedef struct list
 // Basic Operations
 bool list_empty(list_t *list);
 void list_free(list_t *list);
-list_t list_init(void);
+void list_init(list_t *list);
 void list_remove_all(list_t *list);
 
 // Insert

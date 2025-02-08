@@ -67,13 +67,13 @@ void list_free(list_t *list)
     free(list->sentinel);
 }
 
-list_t list_init(void)
+void list_init(list_t *list)
 {
-    list_t list = {.sentinel = malloc(sizeof(list_node_t)), .length = 0};
-    list.sentinel->next = list.sentinel;
-    list.sentinel->prev = list.sentinel;
+    list->sentinel = malloc(sizeof(list_node_t));
+    list->length = 0;
 
-    return list;
+    list->sentinel->next = list->sentinel;
+    list->sentinel->prev = list->sentinel;
 }
 
 void list_remove_all(list_t *list)
