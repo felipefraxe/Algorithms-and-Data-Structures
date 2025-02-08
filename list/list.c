@@ -9,10 +9,10 @@
 
 #include "list.h"
 
-static list_node_t *node_alloc(int key)
+static list_node_t *node_alloc(int data)
 {
     list_node_t *node = malloc(sizeof(list_node_t));
-    node->key = key;
+    node->data = data;
     return node;
 }
 
@@ -31,7 +31,7 @@ static void link_node(list_node_t *anchor, list_node_t *node)
     anchor->prev = node;
 }
 
-static list_node_t *list_node_at(list_t *list, size_t pos)
+static list_node_t *node_at(list_t *list, size_t pos)
 {
     list_node_t *curr;
     if (pos > list->length / 2)
@@ -49,78 +49,6 @@ static list_node_t *list_node_at(list_t *list, size_t pos)
 
     return curr;
 }
-
-/* static list_node_t *list_merge(list_node_t *first, list_node_t *second)
-{
-    list_node_t dummy = {0, nullptr, nullptr};
-    list_node_t *curr = &dummy;
-
-    while (first != nullptr && second != nullptr)
-    {
-        if (first->key < second->key)
-        {
-            curr->next = first;
-            first->prev = curr;
-            first = first->next;
-        }
-        else
-        {
-            curr->next = second;
-            second->prev = curr;
-            second = second->next;
-        }
-
-        curr = curr->next;
-    }
-
-    if (first != nullptr)
-    {
-        curr->next = first;
-        first->prev = curr;
-    }
-
-    if (second != nullptr)
-    {
-        curr->next = second;
-        second->prev = curr;
-    }
-
-    return dummy.next;
-}
-
-static list_node_t *list_split(list_node_t *head)
-{
-    if (head == nullptr || head->next == nullptr)
-        return nullptr;
-
-    list_node_t *fast = head;
-    list_node_t *slow = head;
-    while (fast->next != nullptr && fast->next->next != nullptr)
-    {
-        fast = fast->next->next;
-        slow = slow->next;
-    }
-
-    list_node_t *second = slow->next;
-    slow->next = nullptr;
-    if (second != nullptr)
-        second->prev = nullptr;
-
-    return second;
-}
-
-static list_node_t *list_msort(list_node_t *node)
-{
-    if (node == nullptr || node->next == nullptr)
-        return node;
-
-    list_node_t *second = list_split(node);
-
-    list_node_t *first = list_msort(node);
-    second = list_msort(second);
-
-    return list_merge(first, second);
-} */
 
 inline bool list_empty(list_t *list)
 {
@@ -163,28 +91,28 @@ void list_remove_all(list_t *list)
     list->length = 0;
 }
 
-void list_insert_at(list_t *list, int key, size_t pos)
+void list_insert_at(list_t *list, int data, size_t pos)
 {
     if (pos > list->length)
         return;
 
-    list_node_t *anchor = list_node_at(list, pos);
-    list_node_t *node = node_alloc(key);
+    list_node_t *anchor = node_at(list, pos);
+    list_node_t *node = node_alloc(data);
     link_node(anchor, node);
     list->length++;
 }
 
-void list_push_back(list_t *list, int key)
+void list_push_back(list_t *list, int data)
 {
-    list_node_t *node = node_alloc(key);
+    list_node_t *node = node_alloc(data);
     link_node(list->sentinel, node);
     list->length++;
 }
 
-void list_push_front(list_t *list, int key)
+void list_push_front(list_t *list, int data)
 {
     list_node_t *head = list->sentinel->next;
-    list_node_t *node = node_alloc(key);
+    list_node_t *node = node_alloc(data);
     link_node(head, node);
     list->length++;
 }
@@ -194,7 +122,7 @@ void list_remove_at(list_t *list, size_t pos)
     if (list_empty(list) || pos >= list->length)
         return;
 
-    list_node_t *node = list_node_at(list, pos);
+    list_node_t *node = node_at(list, pos);
     unlink_node(node);
     list->length--;
 }
@@ -219,12 +147,12 @@ void list_pop_front(list_t *list)
     list->length--;
 }
 
-void list_remove_key(list_t *list, int key)
+void list_remove_data(list_t *list, int data)
 {
     list_node_t *curr = list->sentinel->next;
     while (curr != list->sentinel)
     {
-        if (key == curr->key)
+        if (data == curr->data)
         {
             unlink_node(curr);
             list->length--;
@@ -235,13 +163,13 @@ void list_remove_key(list_t *list, int key)
     }
 }
 
-int list_key_at(list_t *list, size_t pos)
+int list_data_at(list_t *list, size_t pos)
 {
     if (pos >= list->length)
         return 0;
 
-    list_node_t *node = list_node_at(list, pos);
-    return node->key;
+    list_node_t *node = node_at(list, pos);
+    return node->data;
 }
 
 void list_print(list_t *list)
@@ -249,7 +177,7 @@ void list_print(list_t *list)
     list_node_t *node = list->sentinel->next;
     while (node != list->sentinel)
     {
-        printf("%d ", node->key);
+        printf("%d ", node->data);
         node = node->next;
     }
     printf("\n");
@@ -266,13 +194,3 @@ void list_reverse(list_t *list)
         curr = tmp;
     } while (curr != list->sentinel);
 }
-
-/* void list_sort(list_t *list)
-{
-   list->head = list_msort(list->head);
-
-    list_node_t *node = list->head;
-    while (node->next != nullptr)
-        node = node->next;
-    list->tail = node;
-} */
