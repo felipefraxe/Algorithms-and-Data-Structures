@@ -1,28 +1,22 @@
 #ifndef STACK_H
 #define STACK_H
 
-typedef struct StackNode
+typedef struct stack_node_t
 {
-    int key;
-    struct StackNode *next;
-} StackNode;
+    int data;
+    struct stack_node_t *next;
+} stack_node_t;
 
-typedef struct Stack
+typedef struct
 {
-    StackNode *top;
-    unsigned int length;
-
-    bool(*empty)(struct Stack *);
-    void(*clear)(struct Stack *);
-    void(*pop)(struct Stack *);
-    void(*push)(struct Stack *, StackNode *);
+    stack_node_t *top;
+    size_t length;
 } Stack;
 
-Stack stack_init(void);
-StackNode *stack_create_node(int key);
-void stack_clear(Stack *self);
-bool stack_empty(Stack *self);
-void stack_pop(Stack *self);
-void stack_push(Stack *self, StackNode *node);
+void stack_init(Stack *stack);
+bool stack_empty(Stack *stack);
+void stack_free(Stack *stack);
+void stack_pop(Stack *stack);
+void stack_push(Stack *stack, int data);
 
 #endif

@@ -1,61 +1,51 @@
-#include <stdio.h>
 #include <stdlib.h>
 
 #include "stack.h"
 
-Stack stack_init(void)
+static stack_node_t *node_alloc(int data)
 {
-    return (Stack){
-        .top = nullptr,
-        .length = 0,
-
-        .clear = stack_clear,
-        .empty = stack_empty,
-        .pop = stack_pop,
-        .push = stack_push};
-}
-
-StackNode *stack_create_node(int key)
-{
-    StackNode *node = malloc(sizeof(StackNode));
+    stack_node_t *node = malloc(sizeof(stack_node_t));
     if (node == nullptr)
-    {
-        fprintf(stderr, "Could not allocate memory for node. Something went wrong\n");
         return nullptr;
-    }
-    node->key = key;
+    node->data = data;
     node->next = nullptr;
     return node;
 }
 
-void stack_clear(Stack *self)
+void stack_init(Stack *stack)
 {
-    while (!stack_empty(self))
-        stack_pop(self);
-    self->length = 0;
+    stack->top = nullptr;
+    stack->length = 0;
 }
 
-bool stack_empty(Stack *self)
+void stack_free(Stack *stack)
 {
-    return self->length == 0;
+    while (!stack_empty(stack))
+        stack_pop(stack);
+    stack->length = 0;
 }
 
-void stack_pop(Stack *self)
+inline bool stack_empty(Stack *stack)
 {
-    StackNode *tmp = self->top;
-    self->top = tmp->next;
+    return stack->length == 0;
+}
 
+void stack_pop(Stack *stack)
+{
+    if (stack_empty(stack))
+        return;
+
+    stack_node_t *tmp = stack->top;
+    stack->top = tmp->next;
     free(tmp);
-
-    self->length--;
+    stack->length--;
 }
 
-void stack_push(Stack *self, StackNode *node)
+void stack_push(Stack *stack, int data)
 {
-    if (self->top != nullptr)
-        node->next = self->top;
-    self->top = node;
-
-    self->length++;
+    stack_node_t *node = node_alloc(data);
+    if (stack->top != nullptr)
+        node->next = stack->top;
+    stack->top = node;
+    stack->length++;
 }
-
