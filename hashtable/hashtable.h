@@ -6,19 +6,17 @@
 #include <string.h>
 #include <wchar.h>
 
-typedef struct HTable_Data
+typedef struct
 {
     char *key;
     char *value;
-}
-HTable_Data;
+} htable_data_t;
 
-typedef struct HTable_Node
+typedef struct htable_node
 {
-    HTable_Data *data;
-    struct HTable_Node *next;
-}
-HTable_Node;
+    htable_data_t *data;
+    struct htable_node *next;
+} htable_node_t;
 
 
 int cmputf8(const void *wcs1, const void *wcs2);

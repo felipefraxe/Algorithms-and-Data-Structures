@@ -14,9 +14,9 @@ void vector_free(vector_t *vec)
 
 void vector_init(vector_t *vec)
 {
-    vec->data = malloc(sizeof(*vec->data));
-    vec->capacity = 1;
+    vec->capacity = 16;
     vec->length = 0;
+    vec->data = malloc(sizeof(*vec->data) * vec->capacity);
 }
 
 int vector_at(vector_t *vec, size_t pos)
@@ -41,9 +41,10 @@ void vector_remove_at(vector_t *vec, size_t pos)
 {
     if (pos >= vec->length)
         return;
-    
+
     vec->length--;
-    memmove(&vec->data[pos], &vec->data[pos + 1], (vec->length - pos) * sizeof(*vec->data));
+    if (pos < vec->length - 1)
+        memmove(&vec->data[pos], &vec->data[pos + 1], (vec->length - pos) * sizeof(*vec->data));
 }
 
 void vector_set(vector_t *vec, size_t pos, int value)

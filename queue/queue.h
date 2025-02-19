@@ -1,7 +1,7 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-#import "../list/list.h"
+#include "../list/list.h"
 
 typedef list_t queue_t;
 

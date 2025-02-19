@@ -2,7 +2,6 @@
 #include <stdlib.h>
 
 #include "queue.h"
-#include "../list/list.h"
 
 void queue_init(queue_t *queue)
 {
