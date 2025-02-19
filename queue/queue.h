@@ -1,30 +1,14 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-typedef struct QueueNode
-{
-    int key;
-    struct QueueNode *next;
-    struct QueueNode *prev;
-} QueueNode;
+#import "../list/list.h"
 
-typedef struct Queue
-{
-    QueueNode *front;
-    QueueNode *back;
-    unsigned int length;
+typedef list_t queue_t
 
-    bool(*empty)(struct Queue *);
-    void(*clear)(struct Queue *);
-    void(*dequeue)(struct Queue *);
-    void(*enqueue)(struct Queue *, QueueNode *);
-} Queue;
-
-Queue queue_init(void);
-QueueNode *queue_create_node(int key);
-void queue_clear(Queue *self);
-bool queue_empty(Queue *self);
-void queue_dequeue(Queue *self);
-void queue_enqueue(Queue *self, QueueNode *node);
+void queue_init(queue_t *queue);
+void queue_free(queue_t *queue);
+bool queue_empty(queue_t *queue);
+void queue_dequeue(queue_t *queue);
+void queue_enqueue(queue_t *queue, int data);
 
 #endif

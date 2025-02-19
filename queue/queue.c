@@ -3,71 +3,33 @@
 
 #include "queue.h"
 
-Queue queue_init(void)
+void queue_init(queue_t *queue)
 {
-    return (Queue){
-        .front = NULL,
-        .back = NULL,
-        .length = 0,
-
-        .clear = queue_clear,
-        .empty = queue_empty,
-        .dequeue = queue_dequeue,
-        .enqueue = queue_enqueue};
+    list_init(queue);
 }
 
-QueueNode *queue_create_node(int key)
+void queue_free(queue_t *queue)
 {
-    QueueNode *node = malloc(sizeof(QueueNode));
-    if (node == nullptr)
-    {
-        fprintf(stderr, "Memory allocation error\n");
-        return nullptr;
-    }
-    node->key = key;
-    node->next = NULL;
-    node->prev = NULL;
-    return node;
+    list_free(queue);
+}
+
+bool queue_empty(queue_t *queue)
+{
+    return queue->length == 0;
+}
+
+void queue_dequeue(queue_t *queue)
+{
+    list_pop_back(queue);
 }
 
 
-void queue_clear(Queue *self)
+void queue_enqueue(queue_t *queue, int data)
 {
-    while (!self->empty(self))
-        self->dequeue(self);
-    self->length = 0;
+    list_push_back(queue, data);
 }
 
-bool queue_empty(Queue *self)
+int queue_front(queue_t *queue)
 {
-    return self->length == 0;
+    return list_front(queue);
 }
-
-void queue_dequeue(Queue *self)
-{
-    QueueNode *tmp = self->front;
-    self->front = tmp->next;
-    if (self->front != nullptr)
-        self->front->prev = nullptr;
-    else
-        self->back = nullptr;
-    free(tmp);
-
-    self->length--;
-}
-
-
-void queue_enqueue(Queue *self, QueueNode *node)
-{
-    if (self->back == nullptr)
-        self->back = self->front = node;
-    else
-    {
-        node->prev = self->back;
-        self->back->next = node;
-        self->back = node;
-    }
-
-    self->length++;
-}
-

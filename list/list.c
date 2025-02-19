@@ -163,6 +163,13 @@ void list_remove_data(list_t *list, int data)
     }
 }
 
+int list_front(list_t *list)
+{
+    if (list->sentinel->next == list->sentinel)
+        return INT_MIN;
+    return list->sentinel->next->data;
+}
+
 int list_data_at(list_t *list, size_t pos)
 {
     if (pos >= list->length)
@@ -170,6 +177,13 @@ int list_data_at(list_t *list, size_t pos)
 
     list_node_t *node = node_at(list, pos);
     return node->data;
+}
+
+int list_back(list_t *list)
+{
+    if (list->sentinel->prev != list->sentinel)
+        return INT_MIN;
+    return list->sentinel->prev->data;
 }
 
 void list_print(list_t *list)

@@ -49,3 +49,10 @@ void stack_push(Stack *stack, int data)
     stack->top = node;
     stack->length++;
 }
+
+int stack_top(Stack *stack)
+{
+    if (stack->top == nullptr)
+        return INT_MIN;
+    return stack->top->data;
+}

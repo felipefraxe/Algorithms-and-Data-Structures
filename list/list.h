@@ -33,7 +33,9 @@ void list_pop_front(list_t *list);
 void list_remove_data(list_t *list, int data);
 
 // Search
+int list_back(list_t *list);
 int list_data_at(list_t *list, size_t pos);
+int list_front(list_t *list);
 
 // Utils
 void list_print(list_t *list);
