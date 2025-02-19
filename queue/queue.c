@@ -2,6 +2,7 @@
 #include <stdlib.h>
 
 #include "queue.h"
+#include "../list/list.h"
 
 void queue_init(queue_t *queue)
 {
@@ -20,7 +21,7 @@ bool queue_empty(queue_t *queue)
 
 void queue_dequeue(queue_t *queue)
 {
-    list_pop_back(queue);
+    list_pop_front(queue);
 }
 
 
