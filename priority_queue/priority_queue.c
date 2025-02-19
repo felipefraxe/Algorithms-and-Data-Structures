@@ -49,8 +49,8 @@ void pq_build_heap(priority_queue_t *vec)
     if (vec->length <= 1)
         return;
 
-    for (size_t i = (vec->length / 2) - 1; i > 0; i--)
-        heapify_down(vec, i);
+    for (size_t parent = (vec->length - 1) / 2; parent > 0; parent--)
+        heapify_down(vec, parent);
     heapify_down(vec, 0);
 }
 
