@@ -13,10 +13,8 @@ static int median_of_three(int arr[], long lo, long hi)
 	long mid = lo + ((hi - lo) / 2);
 	if (arr[lo] > arr[mid])
 		swap(&arr[lo], &arr[mid]);
-
 	if (arr[lo] > arr[hi])
 		swap(&arr[lo], &arr[hi]);
-
 	if (arr[mid] > arr[hi])
 		swap(&arr[mid], &arr[hi]);
 	

@@ -1,15 +1,14 @@
 #ifndef LIST_H
 #define LIST_H
 
-// prototypes for linked lists operations and struct definition
-typedef struct list_node
+typedef struct node
 {
     int data;
-    struct list_node *next;
-    struct list_node *prev;
+    struct node *next;
+    struct node *prev;
 } list_node_t;
 
-typedef struct list
+typedef struct
 {
     list_node_t *sentinel;
     size_t length;

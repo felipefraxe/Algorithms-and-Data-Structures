@@ -1,12 +1,18 @@
 #ifndef BINARY_TREE_H
 #define BINARY_TREE_H
 
-typedef struct tree
+typedef struct node
+{
+    int key;
+    struct node *left;
+    struct node *right;
+} node_t;
+
+typedef struct
 {
   int key;
   struct tree *left, *right;
-}
-tree;
+} bintree_t;
 
 //Prototypes for binary search tree
 tree* search(tree *root, int num);

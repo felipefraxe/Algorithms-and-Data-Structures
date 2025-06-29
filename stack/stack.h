@@ -1,10 +1,10 @@
 #ifndef STACK_H
 #define STACK_H
 
-typedef struct stack_node_t
+typedef struct node
 {
     int data;
-    struct stack_node_t *next;
+    struct node *next;
 } stack_node_t;
 
 typedef struct

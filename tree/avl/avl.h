@@ -6,15 +6,15 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-typedef struct avl_node_t
+typedef struct node
 {
     int key;
     int height;
-    struct avl_node_t *left;
-    struct avl_node_t *right;
+    struct node *left;
+    struct node *right;
 } avl_node_t;
 
-typedef struct avl_tree_t
+typedef struct
 {
     avl_node_t *root;
 } avl_tree_t;
