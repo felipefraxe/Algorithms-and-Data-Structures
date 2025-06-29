@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "quick.h"
 
-static void swap(int *num1, int *num2)
+static inline void swap(int *num1, int *num2)
 {
     int tmp = *num1;
     *num1 = *num2;
@@ -23,9 +23,9 @@ static int median_of_three(int arr[], long lo, long hi)
 	return arr[mid];
 }
 
-static int partition(int arr[], long lo, long hi)
+static long partition(int arr[], long lo, long hi)
 {
-	long pivot = median_of_three(arr, lo, hi);
+	int pivot = median_of_three(arr, lo, hi);
 	while (lo <= hi)
 	{
 		while (arr[lo] < pivot)
