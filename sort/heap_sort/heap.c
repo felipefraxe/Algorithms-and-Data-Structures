@@ -3,109 +3,46 @@
   Just for learning
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <unistd.h>
 #include "heap.h"
 
-#define SIZE 1000000
-
-void swap(int *elem1, int *elem2);
-void generate_array(int *array, int size);
-void print_array(int *array, int size);
-
-int main(void)
+static void swap(int *num1, int *num2)
 {
-  srand(time(0));
-  int array[SIZE];
-  generate_array(array, SIZE);
-  print_array(array, SIZE);
-  clock_t t = clock();
-  heap_sort(array, SIZE);
-  build_heap(array, SIZE);
-  t = clock() - t;
-  print_array(array, SIZE);
-  printf("This method took %lf seconds to sort\n", (double) t / CLOCKS_PER_SEC);
-  return EXIT_SUCCESS;
+    int tmp = *num1;
+    *num1 = *num2;
+    *num2 = tmp;
 }
 
-void heap_sort(int *array, int size)
+static void heapify_down(int arr[], int length, int idx)
 {
-  build_heap(array, size);
-  adjust_aux(array, size);
+    while (true)
+    {
+        int left = (idx << 1) + 1;
+        int right = left + 1;
+        int largest = idx;
+        if (left < length && arr[left] > arr[largest])
+            largest = left;
+        if (right < length && arr[right] > arr[largest])
+            largest = right;
+
+        if (largest == idx)
+            return;
+        swap(&arr[idx], &arr[largest]);
+        idx = largest;
+    }
 }
 
-void adjust_aux(int *array, int size)
+static void build_heap(int arr[], int length)
 {
-  while(size > 0)
-  {
-    swap(&array[0], &array[size-1]);
-    max_heapify(array, array[0], size - 1);
-    size--;
-  }
+    for (int parent = (length - 1) / 2; parent >= 0; parent--)
+        heapify_down(arr, length, parent);
 }
 
-void build_heap(int *array, int size)
+void heap_sort(int array[], int length)
 {
-  int parent = (size - 1) / 2;
-  while(parent > 0)
-  {
-    max_heapify(array, parent, size);
-    parent--;
-    size--;
-  }
-}
-
-void max_heapify(int *array, int parent, int size)
-{
-  int left = (parent * 2) + 1;
-  int right = (parent * 2) + 2;
-  int largest;
-  if(left >= size)
-    largest = parent;
-  else if(right >= size)
-    largest = array[parent] < array[left] ? left : parent;
-  else
-    largest = get_largest(array, parent, left, right);
-
-  if(array[parent] < array[largest])
-  {
-    swap(&array[parent], &array[largest]);
-    max_heapify(array, largest, size);
-  }
-  else if(parent > 0)
-  {
-    int grandparent = (parent - 1) / 2;
-    max_heapify(array, grandparent, size);
-  }
-}
-
-int get_largest(int *array, int num1, int num2, int num3)
-{
-  if(array[num1] >= array[num2] && array[num1] >= array[num3])
-    return num1;
-  if(array[num2] >= array[num1] && array[num2] >= array[num3])
-    return num2;
-  return num3;
-}
-
-void swap(int *elem1, int *elem2)
-{
-  int tmp = *elem1;
-  *elem1 = *elem2;
-  *elem2 = tmp;
-}
-
-void generate_array(int *array, int size)
-{
-  for(int i = 0; i < size; i++)
-    array[i] = rand() / (RAND_MAX / size + 1);
-}
-
-void print_array(int *array, int size)
-{
-  for(int i = 0; i < size; i++)
-    printf("%d ", array[i]);
-  printf("\n");
+    build_heap(array, length);
+    for (int i = length - 1; i > 0; i--)
+    {
+        swap(&array[0], &array[i]);
+        heapify_down(array, i, 0);
+    }
 }
