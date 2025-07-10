@@ -5,7 +5,7 @@ unsigned int power(unsigned int base, unsigned int exp)
     
     unsigned int half = power(base, exp / 2);
     unsigned int result = half * half;
-    if (exp % 2 != 0)
+    if (exp % 2 == 1)
         result *= base;
     return result;
 }

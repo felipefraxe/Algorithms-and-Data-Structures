@@ -14,6 +14,6 @@ int binsearch(int array[], int lo, int hi, int target)
             lo = mid + 1;
         else
             hi = mid - 1;
-  }
-  return -1;
+    }
+    return -1;
 }
